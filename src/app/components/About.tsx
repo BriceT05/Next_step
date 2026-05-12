@@ -116,17 +116,17 @@ export default function About() {
           transition={{ duration: 0.7 }}
           className="relative rounded-3xl overflow-hidden min-h-[320px]"
         >
-          {/* Members photo background */}
+          {/* Graduates photo background */}
           <Image
-            src="/members.jpg"
-            alt="Membres Next Step.sn"
+            src="/bg-graduates.jpg"
+            alt="Jeunes diplômés"
             fill
-            className="object-cover object-top"
+            className="object-cover object-center"
             sizes="(max-width: 768px) 100vw, 1280px"
           />
 
           {/* Dark overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#182426]/92 via-[#182426]/80 to-[#182426]/60" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#182426]/90 via-[#182426]/75 to-[#182426]/55" />
           <div className="absolute inset-0 border border-[#12A89D]/20 rounded-3xl" />
 
           <div className="relative z-10 p-10 grid md:grid-cols-2 gap-8 items-center">

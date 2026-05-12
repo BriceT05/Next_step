@@ -1,6 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import Image from "next/image";
 
 const roles = [
   { value: "membre", label: "Membre", desc: "Rejoindre la communauté NS" },
@@ -52,8 +53,10 @@ export default function Join() {
   };
 
   return (
-    <section id="join" className="py-24 bg-[#F5F7F6] section-divider">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="join" className="py-24 relative section-divider overflow-hidden bg-[#182426]">
+      <Image src="/bg-boat.jpg" alt="" fill className="object-cover object-center" sizes="100vw" />
+      <div className="absolute inset-0 bg-[#182426]/80" />
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left */}
           <motion.div
@@ -65,11 +68,11 @@ export default function Join() {
             <span className="text-[#D9A657] text-sm font-semibold tracking-widest uppercase">
               Faites partie de l&apos;aventure
             </span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#182426] mt-3 mb-6">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mt-3 mb-6">
               Rejoindre{" "}
               <span className="gradient-text">Next Step.sn</span>
             </h2>
-            <p className="text-[#5A6A70] text-lg leading-relaxed mb-8">
+            <p className="text-white/75 text-lg leading-relaxed mb-8">
               Que vous soyez entrepreneur, étudiant, professionnel ou institution,
               il y a une place pour vous au sein de Next Step.sn. Ensemble, bâtissons
               l&apos;Afrique de demain.
@@ -82,7 +85,7 @@ export default function Join() {
                 { icon: "✅", text: "Opportunités de financement et mentorat" },
                 { icon: "✅", text: "Participation à nos événements phares" },
               ].map((b) => (
-                <div key={b.text} className="flex items-center gap-3 text-[#182426]">
+                <div key={b.text} className="flex items-center gap-3 text-white/90">
                   <span className="text-[#12A89D]">{b.icon}</span>
                   <span>{b.text}</span>
                 </div>

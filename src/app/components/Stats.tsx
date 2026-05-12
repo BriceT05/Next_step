@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
+import Image from "next/image";
 
 const stats = [
   { value: 5000, suffix: "+", label: "Jeunes impactés", sub: "Depuis 2025", pct: 85 },
@@ -88,8 +89,8 @@ function RingCounter({
         {count.toLocaleString("fr-FR")}
         {suffix}
       </div>
-      <div className="text-[#182426] font-semibold text-sm mt-1">{label}</div>
-      <div className="text-[#5A6A70] text-xs mt-0.5">{sub}</div>
+      <div className="text-white font-semibold text-sm mt-1">{label}</div>
+      <div className="text-white/60 text-xs mt-0.5">{sub}</div>
     </div>
   );
 }
@@ -98,14 +99,18 @@ const COLORS = ["#D9A657", "#12A89D", "#D9A657", "#12A89D", "#0A7F78"];
 
 export default function Stats() {
   return (
-    <section id="stats" className="py-28 relative overflow-hidden bg-[#F5F7F6]">
-      {/* Top/bottom glows */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#12A89D]/25 to-transparent" />
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#D9A657]/15 to-transparent" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-[#12A89D]/4 rounded-full blur-[120px] pointer-events-none" />
-
-      {/* Dot grid */}
-      <div className="absolute inset-0 hero-dots opacity-30 pointer-events-none" />
+    <section id="stats" className="py-28 relative overflow-hidden bg-[#182426]">
+      {/* Background photo */}
+      <Image
+        src="/bg-flag.jpg"
+        alt="Sénégal"
+        fill
+        className="object-cover object-center"
+        sizes="100vw"
+      />
+      {/* Teal-branded overlay */}
+      <div className="absolute inset-0 bg-[#182426]/80" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#12A89D]/15 via-transparent to-[#D9A657]/10" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
@@ -118,10 +123,10 @@ export default function Stats() {
           <span className="text-[#D9A657] text-sm font-semibold tracking-widest uppercase">
             Notre impact
           </span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#182426] mt-3 mb-4">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mt-3 mb-4">
             Des chiffres qui <span className="gradient-text">parlent</span>
           </h2>
-          <p className="text-[#5A6A70] max-w-xl mx-auto">
+          <p className="text-white/70 max-w-xl mx-auto">
             Chaque chiffre représente une vie transformée, une opportunité créée,
             un avenir construit.
           </p>
@@ -155,7 +160,7 @@ export default function Stats() {
           transition={{ duration: 0.6, delay: 0.5 }}
           className="text-center mt-20"
         >
-          <p className="text-[#5A6A70] text-lg mb-7">
+          <p className="text-white/70 text-lg mb-7">
             Rejoignez le mouvement et faites partie de ces statistiques.
           </p>
           <motion.a

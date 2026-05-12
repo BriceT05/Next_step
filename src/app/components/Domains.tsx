@@ -1,5 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 const DomainIcon = ({ type }: { type: string }) => {
   const props = { className: "w-7 h-7", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: 1.5 };
@@ -44,7 +45,11 @@ const domains = [
 
 export default function Domains() {
   return (
-    <section id="domains" className="py-24 bg-[#F5F7F6] section-divider">
+    <section id="domains" className="py-24 bg-white relative section-divider">
+      {/* Subtle background photo strip at top */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <Image src="/bg-students.jpg" alt="" fill className="object-cover object-center opacity-5" sizes="100vw" />
+      </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

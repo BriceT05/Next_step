@@ -13,37 +13,20 @@ export default function Hero() {
     <section
       id="hero"
       ref={ref}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#182426]"
     >
-      {/* Dot grid */}
-      <div className="absolute inset-0 hero-dots opacity-60" />
-
-      {/* Animated blobs — parallax with scroll */}
-      <motion.div style={{ y }} className="absolute inset-0 pointer-events-none">
-        <motion.div
-          animate={{ x: [0, 40, -20, 0], y: [0, -50, 25, 0] }}
-          transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/4 left-[10%] w-[480px] h-[480px] bg-[#12A89D]/10 rounded-full blur-[120px]"
-        />
-        <motion.div
-          animate={{ x: [0, -30, 20, 0], y: [0, 35, -25, 0] }}
-          transition={{ duration: 28, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-1/4 right-[10%] w-[420px] h-[420px] bg-[#D9A657]/10 rounded-full blur-[120px]"
-        />
-        <motion.div
-          animate={{ x: [0, 25, -15, 0], y: [0, -20, 30, 0] }}
-          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 w-[320px] h-[320px] bg-[#12A89D]/8 rounded-full blur-[100px]"
-        />
-      </motion.div>
-
-      {/* Grid frame lines */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute left-[15%] top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[#74878B]/10 to-transparent" />
-        <div className="absolute right-[15%] top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[#74878B]/10 to-transparent" />
-        <div className="absolute top-[20%] left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#74878B]/8 to-transparent" />
-        <div className="absolute bottom-[20%] left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#74878B]/8 to-transparent" />
-      </div>
+      {/* Background photo */}
+      <Image
+        src="/members.jpg"
+        alt="Next Step.sn — Membres"
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover object-center"
+      />
+      {/* Dark gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#182426]/85 via-[#182426]/70 to-[#182426]/50" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#182426]/60 via-transparent to-[#182426]/30" />
 
       <motion.div
         style={{ opacity }}
@@ -76,7 +59,7 @@ export default function Hero() {
               variants={{
                 visible: { transition: { staggerChildren: 0.12 } },
               }}
-              className="text-4xl sm:text-5xl xl:text-[64px] font-bold text-[#182426] leading-[1.1] tracking-tight mb-7"
+              className="text-4xl sm:text-5xl xl:text-[64px] font-bold text-white leading-[1.1] tracking-tight mb-7"
             >
               {["Construisons", "la"].map((w, i) => (
                 <motion.span
@@ -119,7 +102,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.9 }}
-              className="text-[#5A6A70] text-lg leading-relaxed max-w-xl mb-10"
+              className="text-white/80 text-lg leading-relaxed max-w-xl mb-10"
             >
               Next Step.sn accompagne les jeunes entrepreneurs, leaders et innovateurs
               du Sénégal et d&apos;Afrique vers la prochaine étape de leur réussite.
@@ -161,7 +144,7 @@ export default function Hero() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 1.4 }}
-              className="flex gap-8 mt-12 pt-8 border-t border-gray-200"
+              className="flex gap-8 mt-12 pt-8 border-t border-white/20"
             >
               {[
                 { n: "5 000+", l: "Jeunes impactés" },
@@ -175,7 +158,7 @@ export default function Hero() {
                   transition={{ delay: 1.5 + i * 0.12 }}
                 >
                   <div className="text-2xl font-bold text-[#D9A657] tracking-tight">{s.n}</div>
-                  <div className="text-[#5A6A70] text-xs mt-0.5 tracking-wide">{s.l}</div>
+                  <div className="text-white/60 text-xs mt-0.5 tracking-wide">{s.l}</div>
                 </motion.div>
               ))}
             </motion.div>
@@ -227,19 +210,19 @@ export default function Hero() {
               <motion.div
                 animate={{ y: [-6, 6, -6] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -bottom-4 -right-4 bg-white border border-[#D9A657]/30 rounded-2xl px-4 py-2.5 shadow-xl"
+                className="absolute -bottom-4 -right-4 bg-[#182426]/80 backdrop-blur-sm border border-[#D9A657]/30 rounded-2xl px-4 py-2.5 shadow-xl"
               >
                 <div className="text-[#D9A657] font-bold text-sm">Next Step.sn</div>
-                <div className="text-[#5A6A70] text-xs">Dakar, Sénégal 🇸🇳</div>
+                <div className="text-white/60 text-xs">Dakar, Sénégal 🇸🇳</div>
               </motion.div>
 
               <motion.div
                 animate={{ y: [6, -6, 6] }}
                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -top-2 -left-6 bg-white border border-[#12A89D]/30 rounded-2xl px-4 py-2.5 shadow-xl"
+                className="absolute -top-2 -left-6 bg-[#182426]/80 backdrop-blur-sm border border-[#12A89D]/30 rounded-2xl px-4 py-2.5 shadow-xl"
               >
                 <div className="text-[#12A89D] font-bold text-sm">5 000+</div>
-                <div className="text-[#5A6A70] text-xs">Jeunes impactés</div>
+                <div className="text-white/60 text-xs">Jeunes impactés</div>
               </motion.div>
             </div>
           </motion.div>
@@ -253,13 +236,13 @@ export default function Hero() {
         transition={{ delay: 2.2 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
       >
-        <span className="text-[#5A6A70] text-[10px] tracking-[0.3em] uppercase">Défiler</span>
+        <span className="text-white/50 text-[10px] tracking-[0.3em] uppercase">Défiler</span>
         <motion.div
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 1.5, repeat: Infinity }}
-          className="w-5 h-8 border border-gray-300 rounded-full flex items-start justify-center pt-1.5"
+          className="w-5 h-8 border border-white/30 rounded-full flex items-start justify-center pt-1.5"
         >
-          <div className="w-1 h-1.5 bg-gray-400 rounded-full" />
+          <div className="w-1 h-1.5 bg-white/50 rounded-full" />
         </motion.div>
       </motion.div>
     </section>
