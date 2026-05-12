@@ -52,7 +52,7 @@ export default function Join() {
   };
 
   return (
-    <section id="join" className="py-24 bg-[#182426] section-divider">
+    <section id="join" className="py-24 bg-[#F5F7F6] section-divider">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left */}
@@ -65,11 +65,11 @@ export default function Join() {
             <span className="text-[#D9A657] text-sm font-semibold tracking-widest uppercase">
               Faites partie de l&apos;aventure
             </span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mt-3 mb-6">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#182426] mt-3 mb-6">
               Rejoindre{" "}
               <span className="gradient-text">Next Step.sn</span>
             </h2>
-            <p className="text-gray-400 text-lg leading-relaxed mb-8">
+            <p className="text-[#5A6A70] text-lg leading-relaxed mb-8">
               Que vous soyez entrepreneur, étudiant, professionnel ou institution,
               il y a une place pour vous au sein de Next Step.sn. Ensemble, bâtissons
               l&apos;Afrique de demain.
@@ -82,7 +82,7 @@ export default function Join() {
                 { icon: "✅", text: "Opportunités de financement et mentorat" },
                 { icon: "✅", text: "Participation à nos événements phares" },
               ].map((b) => (
-                <div key={b.text} className="flex items-center gap-3 text-gray-300">
+                <div key={b.text} className="flex items-center gap-3 text-[#182426]">
                   <span className="text-[#12A89D]">{b.icon}</span>
                   <span>{b.text}</span>
                 </div>
@@ -97,7 +97,7 @@ export default function Join() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <div className="bg-white/3 border border-[#74878B]/20 rounded-3xl p-8">
+            <div className="bg-white border border-gray-200 rounded-3xl p-8 shadow-sm">
               {submitted ? (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
@@ -105,8 +105,8 @@ export default function Join() {
                   className="text-center py-8"
                 >
                   <div className="text-6xl mb-4">🎉</div>
-                  <h3 className="text-2xl font-bold text-white mb-2">Candidature prête !</h3>
-                  <p className="text-gray-400 mb-8">
+                  <h3 className="text-2xl font-bold text-[#182426] mb-2">Candidature prête !</h3>
+                  <p className="text-[#5A6A70] mb-8">
                     Clique sur un bouton ci-dessous pour envoyer ta candidature via WhatsApp.
                   </p>
                   <div className="flex flex-col gap-3">
@@ -127,7 +127,7 @@ export default function Join() {
                   </div>
                   <button
                     onClick={resetForm}
-                    className="mt-5 text-gray-500 text-sm hover:text-gray-300 transition-colors underline"
+                    className="mt-5 text-gray-400 text-sm hover:text-gray-600 transition-colors underline"
                   >
                     Nouvelle candidature
                   </button>
@@ -136,7 +136,7 @@ export default function Join() {
                 <form onSubmit={handleSubmit} className="space-y-5">
                   {/* Role selection */}
                   <div>
-                    <label className="text-gray-400 text-sm font-medium mb-3 block">
+                    <label className="text-[#5A6A70] text-sm font-medium mb-3 block">
                       Je souhaite rejoindre en tant que
                     </label>
                     <div className="grid grid-cols-2 gap-3">
@@ -148,12 +148,12 @@ export default function Join() {
                           className={`p-3 rounded-xl border text-left transition-all ${
                             role === r.value
                               ? "border-[#D9A657] bg-[#D9A657]/10"
-                              : "border-[#74878B]/20 hover:border-[#74878B]/40"
+                              : "border-gray-200 hover:border-gray-300"
                           }`}
                         >
                           <div
                             className={`text-sm font-bold ${
-                              role === r.value ? "text-[#D9A657]" : "text-white"
+                              role === r.value ? "text-[#D9A657]" : "text-[#182426]"
                             }`}
                           >
                             {r.label}
@@ -166,25 +166,25 @@ export default function Join() {
 
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-gray-400 text-sm mb-1.5 block">Prénom & Nom *</label>
+                      <label className="text-[#5A6A70] text-sm mb-1.5 block">Prénom & Nom *</label>
                       <input
                         required
                         type="text"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Votre nom complet"
-                        className="w-full bg-white/5 border border-[#74878B]/20 rounded-xl px-4 py-3 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-[#12A89D]/60 transition-colors"
+                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[#182426] text-sm placeholder-gray-400 focus:outline-none focus:border-[#12A89D]/60 transition-colors"
                       />
                     </div>
                     <div>
-                      <label className="text-gray-400 text-sm mb-1.5 block">Email *</label>
+                      <label className="text-[#5A6A70] text-sm mb-1.5 block">Email *</label>
                       <input
                         required
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="votre@email.com"
-                        className="w-full bg-white/5 border border-[#74878B]/20 rounded-xl px-4 py-3 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-[#12A89D]/60 transition-colors"
+                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[#182426] text-sm placeholder-gray-400 focus:outline-none focus:border-[#12A89D]/60 transition-colors"
                       />
                     </div>
                   </div>
@@ -196,7 +196,7 @@ export default function Join() {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="+221 77 XXX XX XX"
-                      className="w-full bg-white/5 border border-[#74878B]/20 rounded-xl px-4 py-3 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-[#12A89D]/60 transition-colors"
+                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[#182426] text-sm placeholder-gray-400 focus:outline-none focus:border-[#12A89D]/60 transition-colors"
                     />
                   </div>
 
@@ -207,7 +207,7 @@ export default function Join() {
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       placeholder="Présentez-vous et dites-nous pourquoi vous souhaitez rejoindre Next Step.sn..."
-                      className="w-full bg-white/5 border border-[#74878B]/20 rounded-xl px-4 py-3 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-[#12A89D]/60 transition-colors resize-none"
+                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-[#182426] text-sm placeholder-gray-400 focus:outline-none focus:border-[#12A89D]/60 transition-colors resize-none"
                     />
                   </div>
 

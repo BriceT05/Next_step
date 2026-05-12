@@ -88,8 +88,8 @@ function RingCounter({
         {count.toLocaleString("fr-FR")}
         {suffix}
       </div>
-      <div className="text-white font-semibold text-sm mt-1">{label}</div>
-      <div className="text-[#74878B] text-xs mt-0.5">{sub}</div>
+      <div className="text-[#182426] font-semibold text-sm mt-1">{label}</div>
+      <div className="text-[#5A6A70] text-xs mt-0.5">{sub}</div>
     </div>
   );
 }
@@ -98,7 +98,7 @@ const COLORS = ["#D9A657", "#12A89D", "#D9A657", "#12A89D", "#0A7F78"];
 
 export default function Stats() {
   return (
-    <section id="stats" className="py-28 relative overflow-hidden bg-[#0D1E20]">
+    <section id="stats" className="py-28 relative overflow-hidden bg-[#F5F7F6]">
       {/* Top/bottom glows */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#12A89D]/25 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#D9A657]/15 to-transparent" />
@@ -118,10 +118,10 @@ export default function Stats() {
           <span className="text-[#D9A657] text-sm font-semibold tracking-widest uppercase">
             Notre impact
           </span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mt-3 mb-4">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#182426] mt-3 mb-4">
             Des chiffres qui <span className="gradient-text">parlent</span>
           </h2>
-          <p className="text-[#74878B] max-w-xl mx-auto">
+          <p className="text-[#5A6A70] max-w-xl mx-auto">
             Chaque chiffre représente une vie transformée, une opportunité créée,
             un avenir construit.
           </p>
@@ -155,7 +155,7 @@ export default function Stats() {
           transition={{ duration: 0.6, delay: 0.5 }}
           className="text-center mt-20"
         >
-          <p className="text-[#74878B] text-lg mb-7">
+          <p className="text-[#5A6A70] text-lg mb-7">
             Rejoignez le mouvement et faites partie de ces statistiques.
           </p>
           <motion.a

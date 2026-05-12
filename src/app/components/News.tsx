@@ -39,7 +39,7 @@ export default function News({ dbArticles }: Props) {
   const articles = dbArticles ?? STATIC_ARTICLES;
 
   return (
-    <section id="news" className="py-24 bg-[#182426] section-divider">
+    <section id="news" className="py-24 bg-white section-divider">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -50,7 +50,7 @@ export default function News({ dbArticles }: Props) {
         >
           <div>
             <span className="text-[#12A89D] text-sm font-semibold tracking-widest uppercase">Restez informé</span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mt-3">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#182426] mt-3">
               Actualités & <span className="gradient-text">Blog</span>
             </h2>
           </div>
@@ -71,7 +71,7 @@ export default function News({ dbArticles }: Props) {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.12 }}
               whileHover={{ y: -6 }}
-              className="group bg-white/3 border border-[#74878B]/15 rounded-2xl overflow-hidden hover:border-[#12A89D]/30 transition-all duration-300 cursor-pointer"
+              className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-lg hover:border-[#12A89D]/30 transition-all duration-300 cursor-pointer"
             >
               <div className={`h-40 relative flex items-center justify-center ${!a.image_url ? `bg-gradient-to-br ${GRADIENTS[i % GRADIENTS.length]}` : ''}`}>
                 {a.image_url ? (
@@ -88,11 +88,11 @@ export default function News({ dbArticles }: Props) {
               </div>
 
               <div className="p-6">
-                <h3 className="text-white font-bold text-base leading-snug mb-3 group-hover:text-[#D9A657] transition-colors line-clamp-2">
+                <h3 className="text-[#182426] font-bold text-base leading-snug mb-3 group-hover:text-[#D9A657] transition-colors line-clamp-2">
                   {a.title}
                 </h3>
-                <p className="text-gray-500 text-sm leading-relaxed mb-5 line-clamp-3">{a.excerpt}</p>
-                <div className="flex items-center justify-between text-xs text-gray-600 pt-4 border-t border-[#74878B]/10">
+                <p className="text-[#5A6A70] text-sm leading-relaxed mb-5 line-clamp-3">{a.excerpt}</p>
+                <div className="flex items-center justify-between text-xs text-gray-400 pt-4 border-t border-gray-100">
                   <span>{a.date}</span>
                   <span>{a.read_time} de lecture</span>
                 </div>

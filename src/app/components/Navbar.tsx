@@ -29,7 +29,7 @@ export default function Navbar() {
       transition={{ duration: 0.6, ease: "easeOut" }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-[#182426]/95 backdrop-blur-md shadow-2xl border-b border-[#74878B]/10"
+          ? "bg-white/95 backdrop-blur-md shadow-md border-b border-gray-200"
           : "bg-transparent"
       }`}
     >
@@ -50,7 +50,7 @@ export default function Navbar() {
               <a
                 key={link.href}
                 href={link.href}
-                className="text-gray-400 hover:text-[#D9A657] transition-colors text-sm font-medium tracking-wide"
+                className="text-[#4A5868] hover:text-[#D9A657] transition-colors text-sm font-medium tracking-wide"
               >
                 {link.label}
               </a>
@@ -73,15 +73,15 @@ export default function Navbar() {
           >
             <motion.span
               animate={menuOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }}
-              className="block w-6 h-0.5 bg-white origin-center"
+              className="block w-6 h-0.5 bg-[#182426] origin-center"
             />
             <motion.span
               animate={menuOpen ? { opacity: 0 } : { opacity: 1 }}
-              className="block w-6 h-0.5 bg-white"
+              className="block w-6 h-0.5 bg-[#182426]"
             />
             <motion.span
               animate={menuOpen ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }}
-              className="block w-6 h-0.5 bg-white origin-center"
+              className="block w-6 h-0.5 bg-[#182426] origin-center"
             />
           </button>
         </div>
@@ -94,14 +94,14 @@ export default function Navbar() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="lg:hidden bg-[#182426]/98 backdrop-blur-md border-t border-[#74878B]/20"
+            className="lg:hidden bg-white backdrop-blur-md border-t border-gray-200 shadow-md"
           >
             <div className="px-4 py-6 flex flex-col gap-4">
               {navLinks.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}
-                  className="text-gray-300 hover:text-[#D9A657] py-1 text-base font-medium transition-colors"
+                  className="text-[#4A5868] hover:text-[#D9A657] py-1 text-base font-medium transition-colors"
                   onClick={() => setMenuOpen(false)}
                 >
                   {link.label}

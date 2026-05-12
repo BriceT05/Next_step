@@ -45,7 +45,7 @@ const impactStats = [
 
 export default function About() {
   return (
-    <section id="about" className="py-24 bg-[#182426] section-divider">
+    <section id="about" className="py-24 bg-white section-divider">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -58,11 +58,11 @@ export default function About() {
           <span className="text-[#12A89D] text-sm font-semibold tracking-widest uppercase">
             Qui sommes-nous
           </span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mt-3 mb-5">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#182426] mt-3 mb-5">
             À propos de{" "}
             <span className="gradient-text">Next Step.sn</span>
           </h2>
-          <p className="text-[#74878B] text-lg max-w-3xl mx-auto leading-relaxed">
+          <p className="text-[#5A6A70] text-lg max-w-3xl mx-auto leading-relaxed">
             Next Step.sn est une organisation de jeunesse engagée, fondée pour connecter,
             inspirer et outiller les jeunes du Sénégal et d&apos;Afrique. Nous croyons que
             chaque jeune porte en lui le potentiel de changer le monde.
@@ -79,7 +79,7 @@ export default function About() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: i * 0.15, ease: [0.16, 1, 0.3, 1] }}
               whileHover={{ y: -5 }}
-              className="group relative glass-card rounded-2xl p-8 hover:border-[#D9A657]/35 transition-all duration-300 overflow-hidden"
+              className="group relative glass-card rounded-2xl p-8 hover:shadow-lg hover:border-[#D9A657]/35 transition-all duration-300 overflow-hidden"
             >
               {/* Corner accent */}
               <div
@@ -95,10 +95,10 @@ export default function About() {
               >
                 {p.icon}
               </motion.div>
-              <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#D9A657] transition-colors">
+              <h3 className="text-xl font-bold text-[#182426] mb-3 group-hover:text-[#D9A657] transition-colors">
                 {p.title}
               </h3>
-              <p className="text-[#74878B] leading-relaxed">{p.text}</p>
+              <p className="text-[#5A6A70] leading-relaxed">{p.text}</p>
 
               <div
                 className="absolute bottom-0 left-0 right-0 h-[2px] rounded-b-2xl opacity-0 group-hover:opacity-100 transition-opacity"
@@ -131,11 +131,11 @@ export default function About() {
 
           <div className="relative z-10 p-10 grid md:grid-cols-2 gap-8 items-center">
             <div>
-              <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+              <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4 drop-shadow-md">
                 La jeunesse vers la{" "}
                 <span className="text-[#D9A657]">prochaine étape</span>
               </h3>
-              <p className="text-[#74878B] leading-relaxed">
+              <p className="text-white/80 leading-relaxed">
                 Depuis notre création, nous avons accompagné des milliers de jeunes dans
                 leur parcours entrepreneurial, académique et personnel à travers le
                 Sénégal et au-delà des frontières.
@@ -152,7 +152,7 @@ export default function About() {
                   className="bg-white/5 border border-white/10 rounded-xl p-4 text-center backdrop-blur-sm"
                 >
                   <div className="text-2xl font-bold text-[#D9A657]">{s.n}</div>
-                  <div className="text-[#74878B] text-xs mt-1">{s.l}</div>
+                  <div className="text-white/70 text-xs mt-1">{s.l}</div>
                 </motion.div>
               ))}
             </div>

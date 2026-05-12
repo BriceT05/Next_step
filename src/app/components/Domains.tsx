@@ -44,7 +44,7 @@ const domains = [
 
 export default function Domains() {
   return (
-    <section id="domains" className="py-24 bg-[#0D1E20] section-divider">
+    <section id="domains" className="py-24 bg-[#F5F7F6] section-divider">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -56,10 +56,10 @@ export default function Domains() {
           <span className="text-[#D9A657] text-sm font-semibold tracking-widest uppercase">
             Ce que nous faisons
           </span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mt-3 mb-4">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#182426] mt-3 mb-4">
             Nos Domaines d&apos;Action
           </h2>
-          <p className="text-[#74878B] max-w-2xl mx-auto">
+          <p className="text-[#5A6A70] max-w-2xl mx-auto">
             10 axes stratégiques pour un impact global sur la jeunesse africaine.
           </p>
         </motion.div>
@@ -73,7 +73,7 @@ export default function Domains() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.06, ease: [0.16, 1, 0.3, 1] }}
               whileHover={{ y: -8, scale: 1.03 }}
-              className="group relative glass-card rounded-2xl p-6 cursor-default hover:border-[#D9A657]/35 transition-all duration-300 overflow-hidden"
+              className="group relative glass-card rounded-2xl p-6 cursor-default hover:shadow-lg hover:border-[#D9A657]/35 transition-all duration-300 overflow-hidden"
             >
               {/* Glow on hover */}
               <div
@@ -92,11 +92,11 @@ export default function Domains() {
               </motion.div>
 
               <h3
-                className="font-bold text-sm mb-2 transition-colors duration-200 group-hover:text-white text-gray-200"
+                className="font-bold text-sm mb-2 transition-colors duration-200 group-hover:text-[#D9A657] text-[#182426]"
               >
                 {d.title}
               </h3>
-              <p className="text-[#74878B] text-xs leading-relaxed">{d.desc}</p>
+              <p className="text-[#5A6A70] text-xs leading-relaxed">{d.desc}</p>
 
               {/* Bottom accent line */}
               <motion.div

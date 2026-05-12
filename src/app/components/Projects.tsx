@@ -52,7 +52,7 @@ export default function Projects({ dbProjects }: Props) {
   const projects = dbProjects ?? STATIC_PROJECTS;
 
   return (
-    <section id="projects" className="py-24 bg-[#182426] section-divider">
+    <section id="projects" className="py-24 bg-white section-divider">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -62,10 +62,10 @@ export default function Projects({ dbProjects }: Props) {
           className="text-center mb-16"
         >
           <span className="text-[#12A89D] text-sm font-semibold tracking-widest uppercase">Nos initiatives</span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mt-3 mb-4">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#182426] mt-3 mb-4">
             Nos <span className="gradient-text">Projets</span>
           </h2>
-          <p className="text-[#74878B] max-w-2xl mx-auto">
+          <p className="text-[#5A6A70] max-w-2xl mx-auto">
             Des projets concrets qui transforment des vies et façonnent l&apos;avenir de l&apos;Afrique.
           </p>
         </motion.div>
@@ -86,7 +86,7 @@ export default function Projects({ dbProjects }: Props) {
                 transition={{ duration: 0.55, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
               >
                 <TiltCard>
-                  <div className="group glass-card rounded-2xl overflow-hidden hover:border-[#12A89D]/30 transition-all duration-300 h-full">
+                  <div className="group glass-card rounded-2xl overflow-hidden hover:shadow-xl hover:border-[#12A89D]/30 transition-all duration-300 h-full">
                     <div className={`relative h-44 flex items-center justify-center overflow-hidden ${!p.image_url ? `bg-gradient-to-br ${bg}` : ''}`}>
                       {p.image_url ? (
                         <Image src={p.image_url} alt={p.title} fill className="object-cover" />
@@ -110,10 +110,10 @@ export default function Projects({ dbProjects }: Props) {
                       </div>
                     </div>
                     <div className="p-6">
-                      <h3 className="text-white font-bold text-base leading-snug mb-3 group-hover:text-[#D9A657] transition-colors duration-200">
+                      <h3 className="text-[#182426] font-bold text-base leading-snug mb-3 group-hover:text-[#D9A657] transition-colors duration-200">
                         {p.title}
                       </h3>
-                      <p className="text-[#74878B] text-sm leading-relaxed mb-5">{p.description}</p>
+                      <p className="text-[#5A6A70] text-sm leading-relaxed mb-5">{p.description}</p>
                       <button className="flex items-center gap-2 text-[#12A89D] text-sm font-semibold">
                         <span>Voir plus</span>
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

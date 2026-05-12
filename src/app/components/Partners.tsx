@@ -20,7 +20,7 @@ export default function Partners({ dbPartners }: Props) {
   const partners = dbPartners ?? STATIC_PARTNERS;
 
   return (
-    <section id="partners" className="py-24 bg-[#0D1E20] section-divider">
+    <section id="partners" className="py-24 bg-white section-divider">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -30,10 +30,10 @@ export default function Partners({ dbPartners }: Props) {
           className="text-center mb-14"
         >
           <span className="text-[#12A89D] text-sm font-semibold tracking-widest uppercase">Ils nous font confiance</span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mt-3 mb-4">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#182426] mt-3 mb-4">
             Partenaires & <span className="gradient-text">Sponsors</span>
           </h2>
-          <p className="text-gray-400 max-w-xl mx-auto">
+          <p className="text-[#5A6A70] max-w-xl mx-auto">
             Des institutions publiques, entreprises privées et organisations internationales qui croient en notre mission.
           </p>
         </motion.div>
@@ -47,7 +47,7 @@ export default function Partners({ dbPartners }: Props) {
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: i * 0.07 }}
               whileHover={{ scale: 1.04 }}
-              className="group bg-white/3 border border-[#74878B]/15 rounded-2xl p-6 flex flex-col items-center justify-center text-center hover:border-[#D9A657]/30 transition-all cursor-default"
+              className="group bg-[#F5F7F6] border border-gray-200 rounded-2xl p-6 flex flex-col items-center justify-center text-center hover:shadow-md hover:border-[#D9A657]/30 transition-all cursor-default"
             >
               <div className="w-20 h-16 rounded-xl bg-white flex items-center justify-center mb-3 overflow-hidden p-1.5">
                 {p.logo_url ? (
@@ -56,8 +56,8 @@ export default function Partners({ dbPartners }: Props) {
                   <span className="text-[#D9A657] font-bold text-xl">{p.name.charAt(0)}</span>
                 )}
               </div>
-              <div className="text-white font-bold text-sm group-hover:text-[#D9A657] transition-colors">{p.name}</div>
-              <div className="text-gray-600 text-xs mt-1 leading-tight">{p.full_name}</div>
+              <div className="text-[#182426] font-bold text-sm group-hover:text-[#D9A657] transition-colors">{p.name}</div>
+              <div className="text-[#5A6A70] text-xs mt-1 leading-tight">{p.full_name}</div>
             </motion.div>
           ))}
         </div>
@@ -67,9 +67,9 @@ export default function Partners({ dbPartners }: Props) {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="text-center mt-12 p-8 border border-dashed border-[#74878B]/20 rounded-2xl"
+          className="text-center mt-12 p-8 border border-dashed border-gray-300 rounded-2xl"
         >
-          <p className="text-gray-400 mb-4">Vous souhaitez devenir partenaire de Next Step.sn ?</p>
+          <p className="text-[#5A6A70] mb-4">Vous souhaitez devenir partenaire de Next Step.sn ?</p>
           <a href="#join"
             className="inline-flex items-center gap-2 bg-transparent border border-[#D9A657]/50 text-[#D9A657] px-6 py-3 rounded-full font-semibold text-sm hover:bg-[#D9A657]/10 transition-all">
             Nous contacter

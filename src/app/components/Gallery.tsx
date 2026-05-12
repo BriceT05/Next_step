@@ -30,7 +30,7 @@ export default function Gallery({ dbItems }: Props) {
   const items: DisplayItem[] = dbItems ? toDisplayItems(dbItems) : STATIC_ITEMS;
 
   return (
-    <section id="gallery" className="py-24 bg-[#0D1E20] section-divider">
+    <section id="gallery" className="py-24 bg-[#F5F7F6] section-divider">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -40,10 +40,10 @@ export default function Gallery({ dbItems }: Props) {
           className="text-center mb-14"
         >
           <span className="text-[#D9A657] text-sm font-semibold tracking-widest uppercase">En images</span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mt-3 mb-4">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#182426] mt-3 mb-4">
             Galerie <span className="gradient-text">Média</span>
           </h2>
-          <p className="text-[#74878B] max-w-xl mx-auto">
+          <p className="text-[#5A6A70] max-w-xl mx-auto">
             Revivez les moments forts de nos événements, formations et actions terrain.
           </p>
         </motion.div>

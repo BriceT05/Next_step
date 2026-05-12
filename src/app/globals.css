@@ -9,8 +9,8 @@ html {
 }
 
 body {
-  background: #182426;
-  color: #ffffff;
+  background: #ffffff;
+  color: #182426;
   overflow-x: hidden;
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
@@ -19,7 +19,7 @@ body {
   width: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #182426;
+  background: #F5F7F6;
 }
 ::-webkit-scrollbar-thumb {
   background: #12A89D;
@@ -34,18 +34,18 @@ body {
 }
 
 .hero-dots {
-  background-image: radial-gradient(circle, rgba(116,135,139,0.18) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(24,36,38,0.07) 1px, transparent 1px);
   background-size: 36px 36px;
 }
 
 .section-divider {
-  border-top: 1px solid rgba(116, 135, 139, 0.12);
+  border-top: 1px solid rgba(229, 234, 235, 0.8);
 }
 
 .glass-card {
-  background: rgba(255,255,255,0.03);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(116,135,139,0.15);
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(24,36,38,0.07), 0 0 0 1px rgba(229,234,235,0.8);
+  border: 1px solid rgba(229,234,235,0.8);
 }
 
 @keyframes shimmer {
