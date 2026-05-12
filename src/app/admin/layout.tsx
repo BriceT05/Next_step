@@ -1,5 +1,6 @@
 import AdminSidebar from './AdminSidebar'
 
+export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Admin — Next Step.sn' }
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
