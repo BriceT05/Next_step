@@ -2,7 +2,27 @@
 import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
 import { useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import type { Project } from "@/lib/supabase";
+
+function titleToSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-");
+}
+
+const STATIC_SLUGS: Record<string, string> = {
+  "1": "forum-national-jeunes-entrepreneurs",
+  "2": "leadership-academy",
+  "3": "action-verte-senegal",
+  "4": "digital-senegal-2030",
+  "5": "incubateur-next-step",
+  "6": "conferences-inspiration",
+};
 
 const STATIC_PROJECTS = [
   { id: "1", title: "Forum National des Jeunes Entrepreneurs", description: "Le plus grand rassemblement annuel de jeunes entrepreneurs du Sénégal. Pitchs, networking, mentorat.", category: "Événement", status: "Inscriptions ouvertes", image_url: "", bg: "from-[#D9A657]/25 via-[#0A7F78]/15 to-[#182426]/80", icon: "🏟️", tagColor: "#D9A657", statusColor: "#D9A657" },
@@ -76,6 +96,7 @@ export default function Projects({ dbProjects }: Props) {
             const statusColor = "statusColor" in p ? (p as typeof STATIC_PROJECTS[0]).statusColor : (STATUS_COLORS[p.status] ?? "#74878B");
             const bg = "bg" in p ? (p as typeof STATIC_PROJECTS[0]).bg : `${BG_GRADIENTS[i % BG_GRADIENTS.length]} to-[#182426]/80`;
             const icon = "icon" in p ? (p as typeof STATIC_PROJECTS[0]).icon : "🚀";
+            const slug = STATIC_SLUGS[p.id] ?? titleToSlug(p.title);
 
             return (
               <motion.div
@@ -86,6 +107,7 @@ export default function Projects({ dbProjects }: Props) {
                 transition={{ duration: 0.55, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
               >
                 <TiltCard>
+                  <Link href={`/projets/${slug}`} className="block h-full">
                   <div className="group glass-card rounded-2xl overflow-hidden hover:shadow-xl hover:border-[#12A89D]/30 transition-all duration-300 h-full">
                     <div className={`relative h-44 flex items-center justify-center overflow-hidden ${!p.image_url ? `bg-gradient-to-br ${bg}` : ''}`}>
                       {p.image_url ? (
@@ -114,14 +136,15 @@ export default function Projects({ dbProjects }: Props) {
                         {p.title}
                       </h3>
                       <p className="text-[#5A6A70] text-sm leading-relaxed mb-5">{p.description}</p>
-                      <button className="flex items-center gap-2 text-[#12A89D] text-sm font-semibold">
+                      <span className="flex items-center gap-2 text-[#12A89D] text-sm font-semibold group-hover:gap-3 transition-all">
                         <span>Voir plus</span>
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                         </svg>
-                      </button>
+                      </span>
                     </div>
                   </div>
+                  </Link>
                 </TiltCard>
               </motion.div>
             );

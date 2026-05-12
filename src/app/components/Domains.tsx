@@ -1,6 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 
 const DomainIcon = ({ type }: { type: string }) => {
   const props = { className: "w-7 h-7", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: 1.5 };
@@ -78,7 +79,10 @@ export default function Domains() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.06, ease: [0.16, 1, 0.3, 1] }}
               whileHover={{ y: -8, scale: 1.03 }}
-              className="group relative glass-card rounded-2xl p-6 cursor-default hover:shadow-lg hover:border-[#D9A657]/35 transition-all duration-300 overflow-hidden"
+            >
+            <Link
+              href={`/domaines/${d.type}`}
+              className="group relative glass-card rounded-2xl p-6 cursor-pointer hover:shadow-lg hover:border-[#D9A657]/35 transition-all duration-300 overflow-hidden block"
             >
               {/* Glow on hover */}
               <div
@@ -111,6 +115,7 @@ export default function Domains() {
                 whileHover={{ scaleX: 1 }}
                 transition={{ duration: 0.3 }}
               />
+            </Link>
             </motion.div>
           ))}
         </div>
