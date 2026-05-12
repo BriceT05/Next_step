@@ -45,6 +45,10 @@ export const metadata: Metadata = {
     images: ["/logo.jpg"],
   },
   metadataBase: new URL("https://nextstep.sn"),
+  icons: {
+    icon: "/logo.jpg",
+    apple: "/logo.jpg",
+  },
 };
 
 export default function RootLayout({

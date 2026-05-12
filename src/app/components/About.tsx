@@ -1,5 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 const pillars = [
   {
@@ -113,15 +114,20 @@ export default function About() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
-          className="relative rounded-3xl overflow-hidden"
+          className="relative rounded-3xl overflow-hidden min-h-[320px]"
         >
-          {/* Background */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#005F5A]/40 via-[#0A7F78]/25 to-[#12A89D]/15" />
-          <div className="absolute inset-0 border border-[#12A89D]/20 rounded-3xl" />
-          <div className="absolute top-0 right-0 w-80 h-80 bg-[#D9A657]/5 rounded-full blur-3xl" />
+          {/* Members photo background */}
+          <Image
+            src="/members.jpg"
+            alt="Membres Next Step.sn"
+            fill
+            className="object-cover object-top"
+            sizes="(max-width: 768px) 100vw, 1280px"
+          />
 
-          {/* Dot grid overlay */}
-          <div className="absolute inset-0 hero-dots opacity-20" />
+          {/* Dark overlay */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#182426]/92 via-[#182426]/80 to-[#182426]/60" />
+          <div className="absolute inset-0 border border-[#12A89D]/20 rounded-3xl" />
 
           <div className="relative z-10 p-10 grid md:grid-cols-2 gap-8 items-center">
             <div>
@@ -143,7 +149,7 @@ export default function About() {
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: 0.3 + i * 0.1 }}
-                  className="bg-white/5 border border-white/8 rounded-xl p-4 text-center backdrop-blur-sm"
+                  className="bg-white/5 border border-white/10 rounded-xl p-4 text-center backdrop-blur-sm"
                 >
                   <div className="text-2xl font-bold text-[#D9A657]">{s.n}</div>
                   <div className="text-[#74878B] text-xs mt-1">{s.l}</div>

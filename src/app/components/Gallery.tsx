@@ -5,7 +5,7 @@ import Image from "next/image";
 import type { GalleryItem } from "@/lib/supabase";
 
 const STATIC_ITEMS = [
-  { id: "1", label: "Forum Entrepreneurs 2025", sub: "250+ participants", image_url: "", tag: "Événement", gradient: "from-[#D9A657]/35 via-[#0A7F78]/20 to-[#182426]", icon: "🏟️", span: "md:col-span-2 md:row-span-2" },
+  { id: "1", label: "Membres & Équipe Next Step.sn", sub: "Notre communauté", image_url: "/members.jpg", tag: "Équipe", gradient: "from-[#D9A657]/35 via-[#0A7F78]/20 to-[#182426]", icon: "🏟️", span: "md:col-span-2 md:row-span-2" },
   { id: "2", label: "Leadership Academy", sub: "100 jeunes formés", image_url: "", tag: "Formation", gradient: "from-[#12A89D]/35 via-[#005F5A]/20 to-[#182426]", icon: "🎓", span: "" },
   { id: "3", label: "Action Verte", sub: "5 000 arbres plantés", image_url: "", tag: "Environnement", gradient: "from-[#005F5A]/45 via-[#0A7F78]/20 to-[#182426]", icon: "🌳", span: "" },
   { id: "4", label: "Digital Training", sub: "200 apprenants", image_url: "", tag: "Tech", gradient: "from-[#0A7F78]/35 via-[#12A89D]/20 to-[#182426]", icon: "💻", span: "" },

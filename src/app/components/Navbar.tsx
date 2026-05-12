@@ -36,10 +36,10 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
           <a href="#hero" className="flex items-center gap-3 group">
-            <div className="relative w-10 h-10 rounded-full overflow-hidden ring-2 ring-[#D9A657]/40 group-hover:ring-[#D9A657] transition-all">
-              <Image src="/logo.jpg" alt="Next Step.sn" fill sizes="40px" className="object-cover" />
+            <div className="relative w-12 h-12 rounded-full overflow-hidden ring-2 ring-[#D9A657]/40 group-hover:ring-[#D9A657] transition-all shadow-lg shadow-[#D9A657]/10">
+              <Image src="/logo.jpg" alt="Next Step.sn" fill sizes="48px" className="object-cover" />
             </div>
-            <div className="hidden sm:block">
+            <div>
               <span className="text-white font-bold text-base">Next </span>
               <span className="text-[#D9A657] font-bold text-base">Step.sn</span>
             </div>
