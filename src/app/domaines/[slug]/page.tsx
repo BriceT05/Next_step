@@ -2,6 +2,7 @@
 
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { getDomainBySlug, DOMAINS } from "@/app/data/domains";
@@ -119,13 +120,20 @@ export default function DomainPage({ params }: { params: Promise<{ slug: string 
 
       {/* ── HERO ── */}
       <div ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#182426]">
-        {/* Animated background */}
+        {/* Photo de fond avec parallaxe */}
         <motion.div className="absolute inset-0" style={{ y: heroY }}>
-          <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse 80% 60% at 50% 0%, ${domain.color}25, transparent 70%)` }} />
-          <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse 60% 80% at 80% 100%, ${domain.secondaryColor}15, transparent 60%)` }} />
-          {/* Grid pattern */}
-          <div className="absolute inset-0 opacity-[0.04]"
-            style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px)", backgroundSize: "60px 60px" }} />
+          <Image
+            src={domain.bg}
+            alt=""
+            fill
+            className="object-cover object-center"
+            sizes="100vw"
+            priority
+          />
+          {/* Voile sombre pour lisibilité du texte blanc */}
+          <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(24,36,38,0.55) 0%, rgba(24,36,38,0.75) 50%, rgba(24,36,38,0.92) 100%)" }} />
+          {/* Halo couleur du domaine */}
+          <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse 70% 50% at 50% 0%, ${domain.color}30, transparent 70%)` }} />
         </motion.div>
 
         {/* Floating particles */}

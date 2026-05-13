@@ -32,16 +32,16 @@ const DomainIcon = ({ type }: { type: string }) => {
 };
 
 const domains = [
-  { type: "entrepreneuriat", title: "Entrepreneuriat", desc: "Soutenir la création d'entreprises et l'essor économique des jeunes.", color: "#D9A657" },
-  { type: "leadership", title: "Leadership", desc: "Former les leaders visionnaires qui guideront l'Afrique de demain.", color: "#12A89D" },
-  { type: "innovation", title: "Innovation", desc: "Encourager les solutions créatives aux défis africains.", color: "#D9A657" },
-  { type: "education", title: "Éducation", desc: "Promouvoir l'apprentissage continu et l'accès au savoir pour tous.", color: "#12A89D" },
-  { type: "environnement", title: "Environnement", desc: "Agir concrètement pour un développement durable et écologique.", color: "#0A7F78" },
-  { type: "technologie", title: "Technologie", desc: "Accélérer la transformation numérique du continent africain.", color: "#12A89D" },
-  { type: "engagement", title: "Engagement Citoyen", desc: "Mobiliser la jeunesse pour une société juste et inclusive.", color: "#D9A657" },
-  { type: "formation", title: "Formation", desc: "Développer les compétences pratiques pour l'employabilité.", color: "#12A89D" },
-  { type: "agriculture", title: "Agriculture", desc: "Valoriser l'agri-entrepreneuriat comme levier de croissance.", color: "#0A7F78" },
-  { type: "evenementiel", title: "Événementiel", desc: "Créer des espaces d'échanges, d'inspiration et de networking.", color: "#D9A657" },
+  { type: "entrepreneuriat", title: "Entrepreneuriat", desc: "Soutenir la création d'entreprises et l'essor économique des jeunes.", color: "#D9A657", bg: "/domain-entrepreneuriat.jpg" },
+  { type: "leadership", title: "Leadership", desc: "Former les leaders visionnaires qui guideront l'Afrique de demain.", color: "#12A89D", bg: "/domain-leadership.jpg" },
+  { type: "innovation", title: "Innovation", desc: "Encourager les solutions créatives aux défis africains.", color: "#D9A657", bg: "/domain-innovation.jpg" },
+  { type: "education", title: "Éducation", desc: "Promouvoir l'apprentissage continu et l'accès au savoir pour tous.", color: "#12A89D", bg: "/domain-education.jpg" },
+  { type: "environnement", title: "Environnement", desc: "Agir concrètement pour un développement durable et écologique.", color: "#0A7F78", bg: "/domain-environnement.jpg" },
+  { type: "technologie", title: "Technologie", desc: "Accélérer la transformation numérique du continent africain.", color: "#12A89D", bg: "/domain-technologie.jpg" },
+  { type: "engagement", title: "Engagement Citoyen", desc: "Mobiliser la jeunesse pour une société juste et inclusive.", color: "#D9A657", bg: "/domain-engagement.jpg" },
+  { type: "formation", title: "Formation", desc: "Développer les compétences pratiques pour l'employabilité.", color: "#12A89D", bg: "/bg-graduates.jpg" },
+  { type: "agriculture", title: "Agriculture", desc: "Valoriser l'agri-entrepreneuriat comme levier de croissance.", color: "#0A7F78", bg: "/domain-agriculture.jpg" },
+  { type: "evenementiel", title: "Événementiel", desc: "Créer des espaces d'échanges, d'inspiration et de networking.", color: "#D9A657", bg: "/domain-evenementiel.jpg" },
 ];
 
 export default function Domains() {
@@ -84,28 +84,33 @@ export default function Domains() {
               href={`/domaines/${d.type}`}
               className="group relative glass-card rounded-2xl p-6 cursor-pointer hover:shadow-lg hover:border-[#D9A657]/35 transition-all duration-300 overflow-hidden block"
             >
-              {/* Glow on hover */}
-              <div
-                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"
-                style={{ background: `radial-gradient(circle at 50% 0%, ${d.color}12, transparent 70%)` }}
-              />
+              {/* Background photo — haut de carte */}
+              <div className="absolute top-0 left-0 right-0 h-28 overflow-hidden rounded-t-2xl">
+                <Image
+                  src={d.bg}
+                  alt=""
+                  fill
+                  className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
+                  sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                />
+                {/* Dégradé bas de l'image vers le blanc de la carte */}
+                <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, rgba(255,255,255,1) 100%)" }} />
+              </div>
 
               {/* Icon */}
               <motion.div
                 whileHover={{ rotate: [0, -8, 8, 0] }}
                 transition={{ duration: 0.4 }}
-                className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-colors"
-                style={{ background: `${d.color}15`, color: d.color }}
+                className="relative z-10 w-12 h-12 rounded-xl flex items-center justify-center mb-3 mt-20 transition-colors"
+                style={{ background: `${d.color}20`, color: d.color }}
               >
                 <DomainIcon type={d.type} />
               </motion.div>
 
-              <h3
-                className="font-bold text-sm mb-2 transition-colors duration-200 group-hover:text-[#D9A657] text-[#182426]"
-              >
+              <h3 className="relative z-10 font-bold text-sm mb-2 transition-colors duration-200 group-hover:text-[#D9A657] text-[#182426]">
                 {d.title}
               </h3>
-              <p className="text-[#5A6A70] text-xs leading-relaxed">{d.desc}</p>
+              <p className="relative z-10 text-[#5A6A70] text-xs leading-relaxed">{d.desc}</p>
 
               {/* Bottom accent line */}
               <motion.div

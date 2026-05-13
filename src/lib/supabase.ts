@@ -17,5 +17,5 @@ export type Project = {
   image_url: string; created_at: string
 }
 export type Partner = {
-  id: string; name: string; full_name: string; logo_url: string; created_at: string
+  id: string; name: string; full_name: string; logo_url: string; website?: string; created_at: string
 }

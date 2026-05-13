@@ -4,14 +4,14 @@ import Image from "next/image";
 import type { Partner } from "@/lib/supabase";
 
 const STATIC_PARTNERS = [
-  { id: "1", name: "UCAD", full_name: "Université Cheikh Anta Diop", logo_url: "/partners/ucad.png" },
-  { id: "2", name: "ANPEJ", full_name: "Agence Nationale Pour l'Emploi des Jeunes", logo_url: "/partners/anpej.jpg" },
-  { id: "3", name: "CTIC", full_name: "Centre TIC Dakar", logo_url: "/partners/ctic.jpg" },
-  { id: "4", name: "FONGIP", full_name: "Fonds de Garantie des Investissements Prioritaires", logo_url: "/partners/fongip.jpg" },
-  { id: "5", name: "Orange SN", full_name: "Orange Sénégal", logo_url: "/partners/orange.jpg" },
-  { id: "6", name: "DER/FJ", full_name: "Délégation Générale à l'Entrepreneuriat Rapide", logo_url: "/partners/der.jpg" },
-  { id: "7", name: "MESRI", full_name: "Ministère de l'Enseignement Supérieur et de la Recherche", logo_url: "/partners/mesri.jpg" },
-  { id: "8", name: "ADEPME", full_name: "Agence de Développement et d'Encadrement des PME", logo_url: "/partners/adepme.jpg" },
+  { id: "1", name: "UCAD", full_name: "Université Cheikh Anta Diop", logo_url: "/partners/ucad.png", website: "https://www.ucad.sn" },
+  { id: "2", name: "ANPEJ", full_name: "Agence Nationale Pour l'Emploi des Jeunes", logo_url: "/partners/anpej.jpg", website: "https://www.anpej.sn" },
+  { id: "3", name: "CTIC", full_name: "Centre TIC Dakar", logo_url: "/partners/ctic.jpg", website: "https://www.cticdakar.com" },
+  { id: "4", name: "FONGIP", full_name: "Fonds de Garantie des Investissements Prioritaires", logo_url: "/partners/fongip.jpg", website: "https://www.fongip.sn" },
+  { id: "5", name: "Orange SN", full_name: "Orange Sénégal", logo_url: "/partners/orange.jpg", website: "https://www.orange.sn" },
+  { id: "6", name: "DER/FJ", full_name: "Délégation Générale à l'Entrepreneuriat Rapide", logo_url: "/partners/der.jpg", website: "https://www.der.gouv.sn" },
+  { id: "7", name: "MESRI", full_name: "Ministère de l'Enseignement Supérieur et de la Recherche", logo_url: "/partners/mesri.jpg", website: "https://www.enseignementsup.gouv.sn" },
+  { id: "8", name: "ADEPME", full_name: "Agence de Développement et d'Encadrement des PME", logo_url: "/partners/adepme.jpg", website: "https://www.adepme.sn" },
 ];
 
 interface Props { dbPartners?: Partner[] }
@@ -40,14 +40,17 @@ export default function Partners({ dbPartners }: Props) {
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {partners.map((p, i) => (
-            <motion.div
+            <motion.a
               key={p.id}
+              href={p.website ?? "#"}
+              target={p.website ? "_blank" : undefined}
+              rel="noopener noreferrer"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: i * 0.07 }}
               whileHover={{ scale: 1.04 }}
-              className="group bg-[#F5F7F6] border border-gray-200 rounded-2xl p-6 flex flex-col items-center justify-center text-center hover:shadow-md hover:border-[#D9A657]/30 transition-all cursor-default"
+              className="group bg-[#F5F7F6] border border-gray-200 rounded-2xl p-6 flex flex-col items-center justify-center text-center hover:shadow-md hover:border-[#D9A657]/30 transition-all cursor-pointer"
             >
               <div className="w-20 h-16 rounded-xl bg-white flex items-center justify-center mb-3 overflow-hidden p-1.5">
                 {p.logo_url ? (
@@ -58,7 +61,13 @@ export default function Partners({ dbPartners }: Props) {
               </div>
               <div className="text-[#182426] font-bold text-sm group-hover:text-[#D9A657] transition-colors">{p.name}</div>
               <div className="text-[#5A6A70] text-xs mt-1 leading-tight">{p.full_name}</div>
-            </motion.div>
+              {p.website && (
+                <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity text-[#12A89D] text-xs flex items-center gap-1">
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                  Visiter le site
+                </div>
+              )}
+            </motion.a>
           ))}
         </div>
 

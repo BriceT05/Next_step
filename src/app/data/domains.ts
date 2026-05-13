@@ -19,6 +19,7 @@ export interface Domain {
   secondaryColor: string;
   gradient: string;
   icon: string;
+  bg: string;
   objectives: string[];
   programs: DomainProgram[];
   stats: DomainStat[];
@@ -38,6 +39,7 @@ export const DOMAINS: Domain[] = [
     secondaryColor: "#B8862E",
     gradient: "from-[#D9A657]/20 via-[#D9A657]/5 to-transparent",
     icon: "🚀",
+    bg: "/domain-entrepreneuriat.jpg",
     objectives: [
       "Accompagner 500 jeunes entrepreneurs par an",
       "Faciliter l'accès au financement et aux investisseurs",
@@ -83,6 +85,7 @@ export const DOMAINS: Domain[] = [
     secondaryColor: "#0A7F78",
     gradient: "from-[#12A89D]/20 via-[#12A89D]/5 to-transparent",
     icon: "⭐",
+    bg: "/domain-leadership.jpg",
     objectives: [
       "Développer les compétences en leadership situationnel",
       "Renforcer l'intelligence émotionnelle et la communication",
@@ -128,6 +131,7 @@ export const DOMAINS: Domain[] = [
     secondaryColor: "#B8862E",
     gradient: "from-[#D9A657]/20 via-[#12A89D]/5 to-transparent",
     icon: "💡",
+    bg: "/domain-innovation.jpg",
     objectives: [
       "Stimuler la créativité et la pensée design",
       "Développer des solutions innovantes aux problèmes locaux",
@@ -173,6 +177,7 @@ export const DOMAINS: Domain[] = [
     secondaryColor: "#0A7F78",
     gradient: "from-[#12A89D]/20 via-[#0A7F78]/5 to-transparent",
     icon: "📚",
+    bg: "/domain-education.jpg",
     objectives: [
       "Démocratiser l'accès à une éducation de qualité",
       "Développer les compétences transversales du 21e siècle",
@@ -218,6 +223,7 @@ export const DOMAINS: Domain[] = [
     secondaryColor: "#065F5A",
     gradient: "from-[#0A7F78]/20 via-[#12A89D]/5 to-transparent",
     icon: "🌿",
+    bg: "/domain-environnement.jpg",
     objectives: [
       "Mobiliser la jeunesse pour l'action climatique",
       "Planter 1 million d'arbres d'ici 2030",
@@ -263,6 +269,7 @@ export const DOMAINS: Domain[] = [
     secondaryColor: "#0A7F78",
     gradient: "from-[#12A89D]/20 via-[#0A7F78]/5 to-transparent",
     icon: "💻",
+    bg: "/domain-technologie.jpg",
     objectives: [
       "Former 10 000 jeunes aux métiers du numérique",
       "Développer l'accès aux outils technologiques",
@@ -308,6 +315,7 @@ export const DOMAINS: Domain[] = [
     secondaryColor: "#B8862E",
     gradient: "from-[#D9A657]/20 via-[#12A89D]/5 to-transparent",
     icon: "🤝",
+    bg: "/domain-engagement.jpg",
     objectives: [
       "Renforcer la conscience civique des jeunes",
       "Former aux outils de la démocratie participative",
@@ -353,6 +361,7 @@ export const DOMAINS: Domain[] = [
     secondaryColor: "#0A7F78",
     gradient: "from-[#12A89D]/20 via-[#D9A657]/5 to-transparent",
     icon: "🎓",
+    bg: "/bg-graduates.jpg",
     objectives: [
       "Réduire le chômage des jeunes par la formation qualifiante",
       "Créer des parcours certifiants reconnus par les employeurs",
@@ -398,6 +407,7 @@ export const DOMAINS: Domain[] = [
     secondaryColor: "#065F5A",
     gradient: "from-[#0A7F78]/20 via-[#D9A657]/5 to-transparent",
     icon: "🌾",
+    bg: "/domain-agriculture.jpg",
     objectives: [
       "Valoriser l'agriculture comme choix professionnel attractif",
       "Former aux techniques agricoles modernes et durables",
@@ -443,6 +453,7 @@ export const DOMAINS: Domain[] = [
     secondaryColor: "#B8862E",
     gradient: "from-[#D9A657]/20 via-[#0A7F78]/5 to-transparent",
     icon: "🎙️",
+    bg: "/domain-evenementiel.jpg",
     objectives: [
       "Créer des espaces de networking de qualité",
       "Inspirer par des témoignages et success stories",
