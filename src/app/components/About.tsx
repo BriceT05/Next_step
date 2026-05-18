@@ -4,32 +4,19 @@ import Image from "next/image";
 
 const pillars = [
   {
-    icon: (
-      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
-    ),
+    img: "/Notre vision.jpg",
     title: "Notre Vision",
     text: "Une génération de jeunes leaders africains qui bâtissent le continent de demain avec ambition, créativité et intégrité.",
     color: "#D9A657",
   },
   {
-    icon: (
-      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
-      </svg>
-    ),
+    img: "/Notre mission.jpg",
     title: "Notre Mission",
     text: "Accompagner, former et valoriser les jeunes leaders, entrepreneurs et innovateurs du Sénégal et d'Afrique en créant des opportunités concrètes.",
     color: "#12A89D",
   },
   {
-    icon: (
-      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-      </svg>
-    ),
+    img: "/Nos valeurs.jpg",
     title: "Nos Valeurs",
     text: "Excellence, Impact, Solidarité, Innovation et Leadership sont les piliers qui guident chacune de nos actions et décisions.",
     color: "#D9A657",
@@ -37,9 +24,9 @@ const pillars = [
 ];
 
 const impactStats = [
-  { n: "2019", l: "Année de création" },
-  { n: "14", l: "Régions couvertes" },
-  { n: "5 000+", l: "Jeunes accompagnés" },
+  { n: "2025", l: "Année de création" },
+  { n: "1+", l: "Région couverte" },
+  { n: "100+", l: "Jeunes impactés" },
   { n: "100%", l: "Impact terrain" },
 ];
 
@@ -78,31 +65,43 @@ export default function About() {
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: i * 0.15, ease: [0.16, 1, 0.3, 1] }}
-              whileHover={{ y: -5 }}
-              className="group relative glass-card rounded-2xl p-8 hover:shadow-lg hover:border-[#D9A657]/35 transition-all duration-300 overflow-hidden"
+              whileHover={{ y: -6 }}
+              className="group relative rounded-2xl overflow-hidden border border-[#E5EAEB] hover:shadow-xl hover:border-opacity-0 transition-all duration-300"
             >
-              {/* Corner accent */}
-              <div
-                className="absolute top-0 right-0 w-20 h-20 rounded-bl-[60px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                style={{ background: `linear-gradient(225deg, ${p.color}12, transparent)` }}
-              />
+              {/* Image */}
+              <div className="relative h-52 overflow-hidden">
+                <Image
+                  src={p.img}
+                  alt={p.title}
+                  fill
+                  className="object-cover object-center transition-transform duration-700 group-hover:scale-110"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#182426]/60 via-transparent to-transparent" />
+                {/* Color badge */}
+                <div
+                  className="absolute bottom-4 left-4 px-3 py-1 rounded-full text-xs font-bold"
+                  style={{ background: p.color, color: "#182426" }}
+                >
+                  {p.title}
+                </div>
+              </div>
 
-              <motion.div
-                whileHover={{ rotate: 10, scale: 1.1 }}
-                transition={{ duration: 0.3 }}
-                className="w-14 h-14 rounded-xl flex items-center justify-center mb-6"
-                style={{ background: `${p.color}15`, color: p.color }}
-              >
-                {p.icon}
-              </motion.div>
-              <h3 className="text-xl font-bold text-[#182426] mb-3 group-hover:text-[#D9A657] transition-colors">
-                {p.title}
-              </h3>
-              <p className="text-[#5A6A70] leading-relaxed">{p.text}</p>
+              {/* Text */}
+              <div className="p-6 bg-white">
+                <h3
+                  className="text-lg font-bold text-[#182426] mb-2 transition-colors duration-200"
+                  style={{ ["--hc" as string]: p.color }}
+                >
+                  <span className="group-hover:text-[var(--hc)] transition-colors">{p.title}</span>
+                </h3>
+                <p className="text-[#5A6A70] text-sm leading-relaxed">{p.text}</p>
+              </div>
 
+              {/* Bottom accent */}
               <div
-                className="absolute bottom-0 left-0 right-0 h-[2px] rounded-b-2xl opacity-0 group-hover:opacity-100 transition-opacity"
-                style={{ background: `linear-gradient(90deg, transparent, ${p.color}, transparent)` }}
+                className="absolute bottom-0 left-0 right-0 h-[3px] scale-x-0 group-hover:scale-x-100 transition-transform duration-400 origin-left"
+                style={{ background: p.color }}
               />
             </motion.div>
           ))}

@@ -1,9 +1,9 @@
 "use client";
-import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
-import { useRef } from "react";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import type { Project } from "@/lib/supabase";
+import { PROJECTS } from "@/app/data/projects";
 
 function titleToSlug(title: string): string {
   return title
@@ -15,153 +15,255 @@ function titleToSlug(title: string): string {
     .replace(/\s+/g, "-");
 }
 
-const STATIC_SLUGS: Record<string, string> = {
-  "1": "forum-national-jeunes-entrepreneurs",
-  "2": "leadership-academy",
-  "3": "action-verte-senegal",
-  "4": "digital-senegal-2030",
-  "5": "incubateur-next-step",
-  "6": "conferences-inspiration",
-};
-
-const STATIC_PROJECTS = [
-  { id: "1", title: "Forum National des Jeunes Entrepreneurs", description: "Le plus grand rassemblement annuel de jeunes entrepreneurs du Sénégal. Pitchs, networking, mentorat.", category: "Événement", status: "Inscriptions ouvertes", image_url: "", bg: "from-[#D9A657]/25 via-[#0A7F78]/15 to-[#182426]/80", icon: "🏟️", tagColor: "#D9A657", statusColor: "#D9A657" },
-  { id: "2", title: "Leadership Academy NS", description: "Programme intensif de 3 mois pour former la prochaine génération de leaders africains.", category: "Formation", status: "En cours", image_url: "", bg: "from-[#12A89D]/25 via-[#005F5A]/15 to-[#182426]/80", icon: "🎓", tagColor: "#12A89D", statusColor: "#12A89D" },
-  { id: "3", title: "Action Verte Sénégal", description: "Initiative de reboisement et de sensibilisation environnementale mobilisant des milliers de jeunes.", category: "Environnement", status: "Accompli", image_url: "", bg: "from-[#005F5A]/35 via-[#0A7F78]/15 to-[#182426]/80", icon: "🌳", tagColor: "#0A7F78", statusColor: "#0A7F78" },
-  { id: "4", title: "Digital Senegal 2030", description: "Formation aux compétences numériques — IA, développement web, cybersécurité — pour la jeunesse.", category: "Technologie", status: "En cours", image_url: "", bg: "from-[#0A7F78]/25 via-[#12A89D]/15 to-[#182426]/80", icon: "💻", tagColor: "#12A89D", statusColor: "#12A89D" },
-  { id: "5", title: "Incubateur Next Step", description: "Accompagnement sur 6 mois pour les startups fondées par des jeunes : coaching, financement, réseau.", category: "Entrepreneuriat", status: "Candidatures ouvertes", image_url: "", bg: "from-[#D9A657]/20 via-[#005F5A]/15 to-[#182426]/80", icon: "🚀", tagColor: "#D9A657", statusColor: "#D9A657" },
-  { id: "6", title: "Conférences Inspiration", description: "Série de conférences mensuelles avec des leaders africains et internationaux pour inspirer la jeunesse.", category: "Événement", status: "Permanent", image_url: "", bg: "from-[#12A89D]/20 via-[#D9A657]/10 to-[#182426]/80", icon: "🎙️", tagColor: "#D9A657", statusColor: "#74878B" },
-];
-
-const CATEGORY_COLORS: Record<string, string> = {
-  "Événement": "#D9A657", "Formation": "#12A89D", "Environnement": "#0A7F78",
-  "Technologie": "#12A89D", "Entrepreneuriat": "#D9A657", "Conférence": "#D9A657",
-};
 const STATUS_COLORS: Record<string, string> = {
-  "En cours": "#12A89D", "Inscriptions ouvertes": "#D9A657", "Candidatures ouvertes": "#D9A657",
-  "Accompli": "#0A7F78", "Permanent": "#74878B", "À venir": "#74878B",
+  "En cours": "#12A89D",
+  "Inscriptions ouvertes": "#D9A657",
+  "Candidatures ouvertes": "#D9A657",
+  "Accompli": "#0A7F78",
+  "Permanent": "#74878B",
+  "Récurrent": "#74878B",
+  "À venir": "#74878B",
 };
-const BG_GRADIENTS = ["from-[#D9A657]/25 via-[#0A7F78]/15","from-[#12A89D]/25 via-[#005F5A]/15","from-[#005F5A]/35 via-[#0A7F78]/15","from-[#0A7F78]/25 via-[#12A89D]/15","from-[#D9A657]/20 via-[#005F5A]/15","from-[#12A89D]/20 via-[#D9A657]/10"];
 
-function TiltCard({ children }: { children: React.ReactNode }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const rotateX = useSpring(useTransform(y, [-80, 80], [12, -12]), { stiffness: 300, damping: 40 });
-  const rotateY = useSpring(useTransform(x, [-80, 80], [-12, 12]), { stiffness: 300, damping: 40 });
+const STATIC_SLUGS: Record<string, string> = {
+  "1": "forum-national-entrepreneurs",
+  "2": "un-jeune-un-permis",
+  "3": "site-tutorat-etutorat",
+  "4": "conference-startup",
+  "5": "interview-entrepreneur",
+};
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    x.set(e.clientX - rect.left - rect.width / 2);
-    y.set(e.clientY - rect.top - rect.height / 2);
-  };
+interface StaticProject {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  status: string;
+  image_url: string;
+  bg?: string;
+  icon?: string;
+  color?: string;
+}
+
+function ProjectCard({
+  project,
+  index,
+  slug,
+  wide,
+}: {
+  project: StaticProject | Project;
+  index: number;
+  slug: string;
+  wide?: boolean;
+}) {
+  const staticProject = PROJECTS.find((p) => p.slug === slug);
+  const bg = staticProject?.bg ?? "";
+  const icon = staticProject?.icon ?? "🚀";
+  const color = staticProject?.color ?? "#D9A657";
+  const statusColor = STATUS_COLORS[project.status] ?? "#74878B";
+  const imgUrl = project.image_url;
 
   return (
-    <motion.div ref={ref} style={{ rotateX, rotateY, transformPerspective: 900 }}
-      onMouseMove={handleMouseMove} onMouseLeave={() => { x.set(0); y.set(0); }}
-      whileHover={{ scale: 1.02, z: 20 }} transition={{ scale: { duration: 0.2 } }}>
-      {children}
+    <motion.div
+      initial={{ opacity: 0, y: 50, scale: 0.97 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 0.7, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
+      className={wide ? "h-[380px] md:h-[420px]" : "h-[340px] md:h-[380px]"}
+    >
+      <Link
+        href={`/projets/${slug}`}
+        className="group relative block w-full h-full rounded-3xl overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D9A657]"
+      >
+        {/* Background */}
+        {imgUrl ? (
+          <Image src={imgUrl} alt={project.title} fill className="object-cover object-center transition-transform duration-700 group-hover:scale-110" sizes="(max-width: 768px) 100vw, 50vw" />
+        ) : bg ? (
+          <Image src={bg} alt={project.title} fill className="object-cover object-center transition-transform duration-700 group-hover:scale-110" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+        ) : (
+          <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${color}30, #182426 80%)` }} />
+        )}
+
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0A1416]/95 via-[#0A1416]/55 to-[#0A1416]/15" />
+
+        {/* Hover color overlay */}
+        <div
+          className="absolute inset-0 opacity-0 group-hover:opacity-25 transition-opacity duration-500"
+          style={{ background: `linear-gradient(135deg, ${color}88, transparent 60%)` }}
+        />
+
+        {/* Top badges */}
+        <div className="absolute top-5 left-5 right-5 flex items-start justify-between">
+          <span
+            className="text-xs font-bold px-3 py-1.5 rounded-full border backdrop-blur-sm"
+            style={{ color, borderColor: `${color}45`, background: `${color}18` }}
+          >
+            {project.category}
+          </span>
+          <span
+            className="text-xs font-semibold px-3 py-1.5 rounded-full"
+            style={{ color: statusColor, background: `${statusColor}20` }}
+          >
+            {project.status}
+          </span>
+        </div>
+
+        {/* Big icon (decorative, faded) */}
+        {!imgUrl && (
+          <div className="absolute right-4 bottom-20 text-[7rem] opacity-5 select-none pointer-events-none leading-none">
+            {icon}
+          </div>
+        )}
+
+        {/* Bottom content */}
+        <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-7">
+          <h3
+            className="text-white text-lg sm:text-xl font-bold leading-snug mb-2 transition-colors duration-300"
+            style={{ ["--hc" as string]: color }}
+          >
+            <span className="group-hover:text-[var(--hc)] transition-colors duration-300">
+              {project.title}
+            </span>
+          </h3>
+          <p className="text-white/55 text-sm leading-relaxed mb-5 line-clamp-2">{project.description}</p>
+
+          {/* CTA */}
+          <div className="flex items-center justify-between">
+            <div
+              className="inline-flex items-center gap-2 text-sm font-semibold opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-300"
+              style={{ color }}
+            >
+              <span>Voir le projet</span>
+              <svg
+                className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2.5}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </div>
+            {staticProject?.participants && (
+              <span className="text-white/30 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                {staticProject.participants} participants
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Bottom accent */}
+        <div
+          className="absolute bottom-0 left-0 right-0 h-[3px] scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left rounded-b-3xl"
+          style={{ background: `linear-gradient(90deg, ${color}, transparent)` }}
+        />
+
+        {/* Shimmer sweep */}
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/4 to-transparent -skew-x-12 pointer-events-none"
+          initial={{ x: "-120%" }}
+          whileHover={{ x: "220%" }}
+          transition={{ duration: 0.7, ease: "easeInOut" }}
+        />
+      </Link>
     </motion.div>
   );
 }
 
-interface Props { dbProjects?: Project[] }
+interface Props {
+  dbProjects?: Project[];
+}
 
 export default function Projects({ dbProjects }: Props) {
-  const projects = dbProjects ?? STATIC_PROJECTS;
+  const rawProjects: (StaticProject | Project)[] = dbProjects && dbProjects.length > 0
+    ? dbProjects
+    : PROJECTS.map((p, i) => ({
+        id: String(i + 1),
+        title: p.title,
+        description: p.description,
+        category: p.category,
+        status: p.status,
+        image_url: "",
+        bg: p.bg,
+        icon: p.icon,
+        color: p.color,
+      }));
 
   return (
-    <section id="projects" className="py-24 bg-white section-divider">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="projects" className="py-24 bg-[#F2F5F5] relative overflow-hidden section-divider">
+      {/* Decorative blobs */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-[140px] opacity-[0.07]" style={{ background: "#D9A657" }} />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full blur-[120px] opacity-[0.06]" style={{ background: "#12A89D" }} />
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          transition={{ duration: 0.7 }}
+          className="text-center mb-14"
         >
-          <span className="text-[#12A89D] text-sm font-semibold tracking-widest uppercase">Nos initiatives</span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#182426] mt-3 mb-4">
-            Nos <span className="gradient-text">Projets</span>
+          <span className="inline-block text-[#12A89D] text-xs font-bold tracking-[0.25em] uppercase mb-4 px-4 py-1.5 rounded-full border border-[#12A89D]/20 bg-[#12A89D]/8">
+            Nos initiatives
+          </span>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#182426] mt-2 mb-4 leading-tight">
+            Nos{" "}
+            <span className="relative">
+              <span className="gradient-text">Projets</span>
+              <motion.span
+                className="absolute -bottom-1 left-0 right-0 h-[3px] rounded-full"
+                style={{ background: "linear-gradient(90deg, #D9A657, #12A89D)" }}
+                initial={{ scaleX: 0 }}
+                whileInView={{ scaleX: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+              />
+            </span>
           </h2>
-          <p className="text-[#5A6A70] max-w-2xl mx-auto">
+          <p className="text-[#5A6A70] text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
             Des projets concrets qui transforment des vies et façonnent l&apos;avenir de l&apos;Afrique.
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map((p, i) => {
-            const tagColor = "tagColor" in p ? (p as typeof STATIC_PROJECTS[0]).tagColor : (CATEGORY_COLORS[p.category] ?? "#D9A657");
-            const statusColor = "statusColor" in p ? (p as typeof STATIC_PROJECTS[0]).statusColor : (STATUS_COLORS[p.status] ?? "#74878B");
-            const bg = "bg" in p ? (p as typeof STATIC_PROJECTS[0]).bg : `${BG_GRADIENTS[i % BG_GRADIENTS.length]} to-[#182426]/80`;
-            const icon = "icon" in p ? (p as typeof STATIC_PROJECTS[0]).icon : "🚀";
+        {/* Projects grid — Row 1: 3 cards */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+          {rawProjects.slice(0, 3).map((p, i) => {
             const slug = STATIC_SLUGS[p.id] ?? titleToSlug(p.title);
-
-            return (
-              <motion.div
-                key={p.id}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.55, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
-              >
-                <TiltCard>
-                  <Link href={`/projets/${slug}`} className="block h-full">
-                  <div className="group glass-card rounded-2xl overflow-hidden hover:shadow-xl hover:border-[#12A89D]/30 transition-all duration-300 h-full">
-                    <div className={`relative h-44 flex items-center justify-center overflow-hidden ${!p.image_url ? `bg-gradient-to-br ${bg}` : ''}`}>
-                      {p.image_url ? (
-                        <Image src={p.image_url} alt={p.title} fill className="object-cover" />
-                      ) : (
-                        <>
-                          <span className="text-6xl">{icon}</span>
-                          <div className="absolute inset-0 bg-gradient-to-t from-[#182426]/60 via-transparent to-transparent" />
-                        </>
-                      )}
-                      <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"
-                        initial={{ x: "-100%" }} whileHover={{ x: "200%" }} transition={{ duration: 0.6 }}
-                      />
-                      <div className="absolute top-4 left-4 text-xs font-bold px-3 py-1 rounded-full border backdrop-blur-sm"
-                        style={{ color: tagColor, borderColor: `${tagColor}40`, background: `${tagColor}15` }}>
-                        {p.category}
-                      </div>
-                      <div className="absolute bottom-4 right-4 text-xs font-semibold px-2.5 py-1 rounded-full"
-                        style={{ color: statusColor, background: `${statusColor}20` }}>
-                        {p.status}
-                      </div>
-                    </div>
-                    <div className="p-6">
-                      <h3 className="text-[#182426] font-bold text-base leading-snug mb-3 group-hover:text-[#D9A657] transition-colors duration-200">
-                        {p.title}
-                      </h3>
-                      <p className="text-[#5A6A70] text-sm leading-relaxed mb-5">{p.description}</p>
-                      <span className="flex items-center gap-2 text-[#12A89D] text-sm font-semibold group-hover:gap-3 transition-all">
-                        <span>Voir plus</span>
-                        <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
-                      </span>
-                    </div>
-                  </div>
-                  </Link>
-                </TiltCard>
-              </motion.div>
-            );
+            return <ProjectCard key={p.id} project={p} index={i} slug={slug} />;
           })}
         </div>
 
+        {/* Projects grid — Row 2: 2 wider cards */}
+        {rawProjects.length > 3 && (
+          <div className="grid sm:grid-cols-2 gap-4">
+            {rawProjects.slice(3, 5).map((p, i) => {
+              const slug = STATIC_SLUGS[p.id] ?? titleToSlug(p.title);
+              return <ProjectCard key={p.id} project={p} index={i + 3} slug={slug} wide />;
+            })}
+          </div>
+        )}
+
+        {/* Bottom CTA */}
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="text-center mt-12"
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="text-center mt-14"
         >
-          <a href="#join"
-            className="inline-flex items-center gap-2 border border-[#D9A657]/40 text-[#D9A657] px-8 py-3.5 rounded-full font-semibold hover:bg-[#D9A657]/8 transition-all text-sm">
+          <Link
+            href="/#join"
+            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full text-sm font-bold border border-[#D9A657]/40 text-[#D9A657] hover:bg-[#D9A657]/8 hover:border-[#D9A657]/70 transition-all duration-300 hover:scale-105"
+          >
             Participer à nos projets
-          </a>
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </Link>
         </motion.div>
       </div>
     </section>

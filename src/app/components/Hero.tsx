@@ -147,9 +147,9 @@ export default function Hero() {
               className="flex gap-8 mt-12 pt-8 border-t border-white/20"
             >
               {[
-                { n: "5 000+", l: "Jeunes impactés" },
-                { n: "50+", l: "Projets réalisés" },
-                { n: "14", l: "Régions touchées" },
+                { n: "100+", l: "Jeunes impactés" },
+                { n: "1+", l: "Projets réalisés" },
+                { n: "1+", l: "Région couverte" },
               ].map((s, i) => (
                 <motion.div
                   key={s.l}
@@ -197,7 +197,7 @@ export default function Hero() {
               {/* Logo */}
               <div className="relative w-full h-full rounded-full overflow-hidden ring-2 ring-[#D9A657]/30 shadow-2xl shadow-[#12A89D]/15">
                 <Image
-                  src="/logo.jpg"
+                  src="/Logo nextstep.jpeg"
                   alt="Next Step.sn"
                   fill
                   priority
@@ -221,7 +221,7 @@ export default function Hero() {
                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
                 className="absolute -top-2 -left-6 bg-[#182426]/80 backdrop-blur-sm border border-[#12A89D]/30 rounded-2xl px-4 py-2.5 shadow-xl"
               >
-                <div className="text-[#12A89D] font-bold text-sm">5 000+</div>
+                <div className="text-[#12A89D] font-bold text-sm">100+</div>
                 <div className="text-white/60 text-xs">Jeunes impactés</div>
               </motion.div>
             </div>

@@ -68,7 +68,7 @@ export default function Footer() {
           >
             <div className="flex items-center gap-3 mb-5">
               <div className="relative w-12 h-12 rounded-full overflow-hidden ring-2 ring-[#D9A657]/30">
-                <Image src="/logo.jpg" alt="Next Step.sn" fill sizes="48px" className="object-cover" />
+                <Image src="/Logo nextstep.jpeg" alt="Next Step.sn" fill sizes="48px" className="object-cover" />
               </div>
               <div>
                 <div className="text-white font-bold">Next Step.sn</div>
