@@ -5,14 +5,14 @@ import Image from "next/image";
 import type { GalleryItem } from "@/lib/supabase";
 
 const STATIC_ITEMS = [
-  { id: "1", label: "Membres & Équipe Next Step.sn", sub: "Notre communauté", image_url: "/members.jpg", tag: "Équipe", gradient: "from-[#D9A657]/35 via-[#0A7F78]/20 to-[#182426]", icon: "🏟️", span: "md:col-span-2 md:row-span-2" },
-  { id: "2", label: "Leadership Academy", sub: "100 jeunes formés", image_url: "", tag: "Formation", gradient: "from-[#12A89D]/35 via-[#005F5A]/20 to-[#182426]", icon: "🎓", span: "" },
-  { id: "3", label: "Action Verte", sub: "5 000 arbres plantés", image_url: "", tag: "Environnement", gradient: "from-[#005F5A]/45 via-[#0A7F78]/20 to-[#182426]", icon: "🌳", span: "" },
-  { id: "4", label: "Digital Training", sub: "200 apprenants", image_url: "", tag: "Tech", gradient: "from-[#0A7F78]/35 via-[#12A89D]/20 to-[#182426]", icon: "💻", span: "" },
-  { id: "5", label: "Conférence Inspiration", sub: "500+ présents", image_url: "", tag: "Conférence", gradient: "from-[#D9A657]/30 via-[#182426] to-[#182426]", icon: "🎙️", span: "" },
-  { id: "6", label: "Remise de diplômes", sub: "Cérémonie annuelle", image_url: "", tag: "Célébration", gradient: "from-[#12A89D]/30 via-[#D9A657]/15 to-[#182426]", icon: "🏆", span: "md:col-span-2" },
-  { id: "7", label: "Ateliers pratiques", sub: "Chaque weekend", image_url: "", tag: "Atelier", gradient: "from-[#D9A657]/25 via-[#12A89D]/10 to-[#182426]", icon: "🛠️", span: "" },
-  { id: "8", label: "Networking Jeunesse", sub: "Connexions durables", image_url: "", tag: "Réseau", gradient: "from-[#005F5A]/35 via-[#D9A657]/10 to-[#182426]", icon: "🤝", span: "" },
+  { id: "1", label: "Membres & Équipe Next Step.sn", sub: "Notre communauté", image_url: "/members.jpg", tag: "Équipe", gradient: "from-[#D9A657]/35 via-[#0A7F78]/20 to-[#182426]",  span: "md:col-span-2 md:row-span-2" },
+  { id: "2", label: "Leadership Academy", sub: "100 jeunes formés", image_url: "", tag: "Formation", gradient: "from-[#12A89D]/35 via-[#005F5A]/20 to-[#182426]",  span: "" },
+  { id: "3", label: "Action Verte", sub: "5 000 arbres plantés", image_url: "", tag: "Environnement", gradient: "from-[#005F5A]/45 via-[#0A7F78]/20 to-[#182426]", span: "" },
+  { id: "4", label: "Digital Training", sub: "200 apprenants", image_url: "", tag: "Tech", gradient: "from-[#0A7F78]/35 via-[#12A89D]/20 to-[#182426]", span: "" },
+  { id: "5", label: "Conférence Inspiration", sub: "500+ présents", image_url: "", tag: "Conférence", gradient: "from-[#D9A657]/30 via-[#182426] to-[#182426]", span: "" },
+  { id: "6", label: "Remise de diplômes", sub: "Cérémonie annuelle", image_url: "", tag: "Célébration", gradient: "from-[#12A89D]/30 via-[#D9A657]/15 to-[#182426]", span: "md:col-span-2" },
+  { id: "7", label: "Ateliers pratiques", sub: "Chaque weekend", image_url: "", tag: "Atelier", gradient: "from-[#D9A657]/25 via-[#12A89D]/10 to-[#182426]", span: "" },
+  { id: "8", label: "Networking Jeunesse", sub: "Connexions durables", image_url: "", tag: "Réseau", gradient: "from-[#005F5A]/35 via-[#D9A657]/10 to-[#182426]", span: "" },
 ];
 
 interface DisplayItem { id: string; label: string; sub: string; image_url: string; tag: string; gradient?: string; icon?: string; span?: string }

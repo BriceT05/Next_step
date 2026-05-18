@@ -4,11 +4,11 @@ import { motion, useInView } from "framer-motion";
 import Image from "next/image";
 
 const stats = [
-  { value: 5000, suffix: "+", label: "Jeunes impactés", sub: "Depuis 2025", pct: 85 },
-  { value: 50, suffix: "+", label: "Projets réalisés", sub: "Toutes régions", pct: 75 },
-  { value: 30, suffix: "+", label: "Formations", sub: "Organisées", pct: 65 },
-  { value: 25, suffix: "+", label: "Partenaires", sub: "Actifs", pct: 60 },
-  { value: 14, suffix: "", label: "Régions", sub: "Couvertes", pct: 100 },
+  { value: 100, suffix: "+", label: "Jeunes impactés", sub: "Depuis 2025", pct: 85 },
+  { value: 1, suffix: "+", label: "Projets réalisés", sub: "Toutes régions", pct: 75 },
+  { value: 1, suffix: "+", label: "Formations", sub: "Organisées", pct: 65 },
+  { value: 8, suffix: "+", label: "Partenaires", sub: "Actifs", pct: 60 },
+  { value: 1, suffix: "", label: "Régions", sub: "Couvertes", pct: 100 },
 ];
 
 const RADIUS = 38;
