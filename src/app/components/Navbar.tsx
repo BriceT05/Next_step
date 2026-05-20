@@ -40,7 +40,7 @@ export default function Navbar() {
               <Image src="/Logo nextstep.jpeg" alt="Next Step.sn" fill sizes="48px" className="object-cover" />
             </div>
             <div>
-              <span className="text-white font-bold text-base">Next </span>
+              <span className={`font-bold text-base transition-colors ${scrolled ? "text-[#182426]" : "text-white"}`}>Next </span>
               <span className="text-[#D9A657] font-bold text-base">Step.sn</span>
             </div>
           </a>
@@ -50,7 +50,9 @@ export default function Navbar() {
               <a
                 key={link.href}
                 href={link.href}
-                className="text-[#4A5868] hover:text-[#D9A657] transition-colors text-sm font-medium tracking-wide"
+                className={`transition-colors text-sm font-medium tracking-wide hover:text-[#D9A657] ${
+                  scrolled ? "text-[#4A5868]" : "text-white/85"
+                }`}
               >
                 {link.label}
               </a>
@@ -73,15 +75,15 @@ export default function Navbar() {
           >
             <motion.span
               animate={menuOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }}
-              className="block w-6 h-0.5 bg-[#182426] origin-center"
+              className={`block w-6 h-0.5 origin-center transition-colors ${scrolled ? "bg-[#182426]" : "bg-white"}`}
             />
             <motion.span
               animate={menuOpen ? { opacity: 0 } : { opacity: 1 }}
-              className="block w-6 h-0.5 bg-[#182426]"
+              className={`block w-6 h-0.5 transition-colors ${scrolled ? "bg-[#182426]" : "bg-white"}`}
             />
             <motion.span
               animate={menuOpen ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }}
-              className="block w-6 h-0.5 bg-[#182426] origin-center"
+              className={`block w-6 h-0.5 origin-center transition-colors ${scrolled ? "bg-[#182426]" : "bg-white"}`}
             />
           </button>
         </div>

@@ -24,7 +24,7 @@ export default function Join() {
   const [submitted, setSubmitted] = useState(false);
   const [waMessage, setWaMessage] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const roleLabel = roles.find((r) => r.value === role)?.label ?? role;
     const text = [
@@ -39,6 +39,20 @@ export default function Join() {
       .filter(Boolean)
       .join("\n");
     setWaMessage(encodeURIComponent(text));
+
+    // Sauvegarde en base de données (silencieuse — ne bloque pas si échoue)
+    try {
+      const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+      if (url && key) {
+        const { createClient } = await import("@supabase/supabase-js");
+        const db = createClient(url, key);
+        await db.from("submissions").insert({ role, name, email, phone: phone || null, message: message || null });
+      }
+    } catch {
+      // Silently ignore DB errors — WhatsApp still works
+    }
+
     setSubmitted(true);
   };
 

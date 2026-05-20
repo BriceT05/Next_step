@@ -44,9 +44,14 @@ export async function logout() {
 }
 
 // ── Gallery ───────────────────────────────────────────────
-export async function addGalleryItem(data: { label: string; sub: string; tag: string; image_url: string }) {
+export async function addGalleryItem(data: { label: string; sub: string; tag: string; image_url: string; video_url?: string }) {
   await checkAuth()
   await adminClient().from('gallery_items').insert(data)
+}
+
+export async function updateGalleryItem(id: string, data: { label: string; sub: string; tag: string; image_url: string; video_url?: string }) {
+  await checkAuth()
+  await adminClient().from('gallery_items').update(data).eq('id', id)
 }
 
 export async function deleteGalleryItem(id: string) {
@@ -63,6 +68,14 @@ export async function addNewsArticle(data: {
   await adminClient().from('news_articles').insert(data)
 }
 
+export async function updateNewsArticle(id: string, data: {
+  category: string; category_color: string; title: string; excerpt: string
+  date: string; author: string; read_time: string; image_url: string
+}) {
+  await checkAuth()
+  await adminClient().from('news_articles').update(data).eq('id', id)
+}
+
 export async function deleteNewsArticle(id: string) {
   await checkAuth()
   await adminClient().from('news_articles').delete().eq('id', id)
@@ -74,18 +87,43 @@ export async function addProject(data: { title: string; description: string; cat
   await adminClient().from('projects').insert(data)
 }
 
+export async function updateProject(id: string, data: { title: string; description: string; category: string; status: string; image_url: string }) {
+  await checkAuth()
+  await adminClient().from('projects').update(data).eq('id', id)
+}
+
 export async function deleteProject(id: string) {
   await checkAuth()
   await adminClient().from('projects').delete().eq('id', id)
 }
 
 // ── Partners ──────────────────────────────────────────────
-export async function addPartner(data: { name: string; full_name: string; logo_url: string }) {
+export async function addPartner(data: { name: string; full_name: string; logo_url: string; website?: string }) {
   await checkAuth()
   await adminClient().from('partners').insert(data)
+}
+
+export async function updatePartner(id: string, data: { name: string; full_name: string; logo_url: string; website?: string }) {
+  await checkAuth()
+  await adminClient().from('partners').update(data).eq('id', id)
 }
 
 export async function deletePartner(id: string) {
   await checkAuth()
   await adminClient().from('partners').delete().eq('id', id)
+}
+
+// ── Submissions ───────────────────────────────────────────
+export async function addSubmission(data: { role: string; name: string; email: string; phone?: string; message?: string }) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  if (!url || !key) return
+  const { createClient } = await import('@supabase/supabase-js')
+  const db = createClient(url, key)
+  await db.from('submissions').insert(data)
+}
+
+export async function deleteSubmission(id: string) {
+  await checkAuth()
+  await adminClient().from('submissions').delete().eq('id', id)
 }

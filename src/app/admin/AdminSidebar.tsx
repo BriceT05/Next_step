@@ -5,10 +5,12 @@ import Image from 'next/image'
 import { logout } from './actions'
 
 const navLinks = [
+  { href: '/admin/dashboard', label: 'Tableau de bord', icon: '📊' },
   { href: '/admin/gallery', label: 'Galerie', icon: '🖼️' },
   { href: '/admin/news', label: 'Actualités', icon: '📰' },
   { href: '/admin/projects', label: 'Projets', icon: '🚀' },
   { href: '/admin/partners', label: 'Partenaires', icon: '🤝' },
+  { href: '/admin/submissions', label: 'Candidatures', icon: '📋' },
 ]
 
 export default function AdminSidebar() {

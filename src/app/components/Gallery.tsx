@@ -1,21 +1,22 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import type { GalleryItem } from "@/lib/supabase";
 
 const STATIC_ITEMS = [
-  { id: "1", label: "Membres & Équipe Next Step.sn", sub: "Notre communauté", image_url: "/members.jpg", tag: "Équipe", gradient: "from-[#D9A657]/35 via-[#0A7F78]/20 to-[#182426]",  span: "md:col-span-2 md:row-span-2" },
-  { id: "2", label: "Leadership Academy", sub: "100 jeunes formés", image_url: "", tag: "Formation", gradient: "from-[#12A89D]/35 via-[#005F5A]/20 to-[#182426]",  span: "" },
-  { id: "3", label: "Action Verte", sub: "5 000 arbres plantés", image_url: "", tag: "Environnement", gradient: "from-[#005F5A]/45 via-[#0A7F78]/20 to-[#182426]", span: "" },
-  { id: "4", label: "Digital Training", sub: "200 apprenants", image_url: "", tag: "Tech", gradient: "from-[#0A7F78]/35 via-[#12A89D]/20 to-[#182426]", span: "" },
-  { id: "5", label: "Conférence Inspiration", sub: "500+ présents", image_url: "", tag: "Conférence", gradient: "from-[#D9A657]/30 via-[#182426] to-[#182426]", span: "" },
-  { id: "6", label: "Remise de diplômes", sub: "Cérémonie annuelle", image_url: "", tag: "Célébration", gradient: "from-[#12A89D]/30 via-[#D9A657]/15 to-[#182426]", span: "md:col-span-2" },
-  { id: "7", label: "Ateliers pratiques", sub: "Chaque weekend", image_url: "", tag: "Atelier", gradient: "from-[#D9A657]/25 via-[#12A89D]/10 to-[#182426]", span: "" },
-  { id: "8", label: "Networking Jeunesse", sub: "Connexions durables", image_url: "", tag: "Réseau", gradient: "from-[#005F5A]/35 via-[#D9A657]/10 to-[#182426]", span: "" },
+  { id: "1", label: "Membres & Équipe Next Step.sn", sub: "Notre communauté", image_url: "/members.jpg", tag: "Équipe", icon: "👥", gradient: "from-[#D9A657]/35 via-[#0A7F78]/20 to-[#182426]", span: "md:col-span-2 md:row-span-2" },
+  { id: "2", label: "Leadership Academy", sub: "100 jeunes formés", image_url: "", tag: "Formation", icon: "🎓", gradient: "from-[#12A89D]/35 via-[#005F5A]/20 to-[#182426]", span: "" },
+  { id: "3", label: "Action Verte", sub: "5 000 arbres plantés", image_url: "", tag: "Environnement", icon: "🌱", gradient: "from-[#005F5A]/45 via-[#0A7F78]/20 to-[#182426]", span: "" },
+  { id: "4", label: "Digital Training", sub: "200 apprenants", image_url: "", tag: "Tech", icon: "💻", gradient: "from-[#0A7F78]/35 via-[#12A89D]/20 to-[#182426]", span: "" },
+  { id: "5", label: "Conférence Inspiration", sub: "500+ présents", image_url: "", tag: "Conférence", icon: "🎤", gradient: "from-[#D9A657]/30 via-[#182426] to-[#182426]", span: "" },
+  { id: "6", label: "Remise de diplômes", sub: "Cérémonie annuelle", image_url: "", tag: "Célébration", icon: "🏆", gradient: "from-[#12A89D]/30 via-[#D9A657]/15 to-[#182426]", span: "md:col-span-2" },
+  { id: "7", label: "Ateliers pratiques", sub: "Chaque weekend", image_url: "", tag: "Atelier", icon: "🛠️", gradient: "from-[#D9A657]/25 via-[#12A89D]/10 to-[#182426]", span: "" },
+  { id: "8", label: "Networking Jeunesse", sub: "Connexions durables", image_url: "", tag: "Réseau", icon: "🤝", gradient: "from-[#005F5A]/35 via-[#D9A657]/10 to-[#182426]", span: "" },
 ];
 
-interface DisplayItem { id: string; label: string; sub: string; image_url: string; tag: string; gradient?: string; icon?: string; span?: string }
+interface DisplayItem { id: string; label: string; sub: string; image_url: string; tag: string; gradient?: string; icon?: string; span?: string; video_url?: string }
 
 function toDisplayItems(dbItems: GalleryItem[]): DisplayItem[] {
   return dbItems.map(item => ({ ...item, gradient: "from-[#D9A657]/20 to-[#12A89D]/10", icon: "🖼️", span: "" }))
@@ -28,6 +29,14 @@ export default function Gallery({ dbItems }: Props) {
   const [selected, setSelected] = useState<number | null>(null);
 
   const items: DisplayItem[] = dbItems ? toDisplayItems(dbItems) : STATIC_ITEMS;
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSelected(null);
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, []);
 
   return (
     <section id="gallery" className="py-24 bg-[#F5F7F6] section-divider">
@@ -63,7 +72,14 @@ export default function Gallery({ dbItems }: Props) {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              {item.image_url ? (
+              {item.video_url ? (
+                <>
+                  <video src={item.video_url} muted loop playsInline className="absolute inset-0 w-full h-full object-cover" />
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white text-lg">▶</div>
+                  </div>
+                </>
+              ) : item.image_url ? (
                 <Image src={item.image_url} alt={item.label} fill className="object-cover" />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -102,12 +118,12 @@ export default function Gallery({ dbItems }: Props) {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="text-center mt-10"
         >
-          <a href="#" className="inline-flex items-center gap-2 border border-[#74878B]/25 text-[#74878B] px-6 py-3 rounded-full text-sm hover:border-[#D9A657]/40 hover:text-[#D9A657] transition-all">
+          <Link href="/galerie" className="inline-flex items-center gap-2 border border-[#74878B]/25 text-[#74878B] px-6 py-3 rounded-full text-sm hover:border-[#D9A657]/40 hover:text-[#D9A657] transition-all">
             Voir toute la galerie
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
-          </a>
+          </Link>
         </motion.div>
 
         <AnimatePresence>
@@ -120,10 +136,12 @@ export default function Gallery({ dbItems }: Props) {
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className={`relative w-full max-w-lg h-72 rounded-3xl overflow-hidden ${!items[selected].image_url ? `bg-gradient-to-br ${items[selected].gradient}` : ''}`}
+                className={`relative w-full max-w-lg h-72 rounded-3xl overflow-hidden ${!items[selected].image_url && !items[selected].video_url ? `bg-gradient-to-br ${items[selected].gradient}` : ''}`}
                 onClick={(e) => e.stopPropagation()}
               >
-                {items[selected].image_url ? (
+                {items[selected].video_url ? (
+                  <video src={items[selected].video_url} controls autoPlay className="w-full h-full object-cover" />
+                ) : items[selected].image_url ? (
                   <Image src={items[selected].image_url} alt={items[selected].label} fill className="object-cover" />
                 ) : (
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">

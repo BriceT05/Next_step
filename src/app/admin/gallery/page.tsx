@@ -5,15 +5,16 @@ import { supabase } from '@/lib/supabase'
 import type { GalleryItem } from '@/lib/supabase'
 import { addGalleryItem, deleteGalleryItem } from '../actions'
 
-const TAGS = ['Événement', 'Formation', 'Tech', 'Conférence', 'Environnement', 'Atelier', 'Réseau', 'Célébration']
+const TAGS = ['Événement', 'Formation', 'Tech', 'Conférence', 'Environnement', 'Atelier', 'Réseau', 'Célébration', 'Équipe', 'Terrain', 'Agriculture']
 
 export default function GalleryAdmin() {
   const [items, setItems] = useState<GalleryItem[]>([])
   const [loading, setLoading] = useState(true)
   const [isPending, startTransition] = useTransition()
-  const [form, setForm] = useState({ label: '', sub: '', tag: TAGS[0], image_url: '' })
+  const [form, setForm] = useState({ label: '', sub: '', tag: TAGS[0], image_url: '', video_url: '' })
   const [uploading, setUploading] = useState(false)
   const [previewUrl, setPreviewUrl] = useState('')
+  const [mediaType, setMediaType] = useState<'image' | 'video'>('image')
   const fileRef = useRef<HTMLInputElement>(null)
 
   const fetchItems = async () => {
@@ -34,16 +35,21 @@ export default function GalleryAdmin() {
     fd.append('folder', 'gallery')
     const res = await fetch('/api/upload', { method: 'POST', body: fd })
     const data = await res.json()
-    setForm(f => ({ ...f, image_url: data.url ?? '' }))
+    if (mediaType === 'video') {
+      setForm(f => ({ ...f, video_url: data.url ?? '' }))
+    } else {
+      setForm(f => ({ ...f, image_url: data.url ?? '' }))
+    }
     setUploading(false)
   }
 
   const handleAdd = () => {
     if (!form.label) return
     startTransition(async () => {
-      await addGalleryItem(form)
-      setForm({ label: '', sub: '', tag: TAGS[0], image_url: '' })
+      await addGalleryItem({ label: form.label, sub: form.sub, tag: form.tag, image_url: form.image_url, video_url: form.video_url || undefined })
+      setForm({ label: '', sub: '', tag: TAGS[0], image_url: '', video_url: '' })
       setPreviewUrl('')
+      setMediaType('image')
       if (fileRef.current) fileRef.current.value = ''
       await fetchItems()
     })
@@ -83,8 +89,18 @@ export default function GalleryAdmin() {
             </select>
           </div>
           <div>
-            <label className="text-gray-400 text-sm mb-1.5 block">Photo</label>
-            <input ref={fileRef} type="file" accept="image/*" onChange={handleFileChange}
+            <label className="text-gray-400 text-sm mb-1.5 block">Type de média</label>
+            <div className="flex gap-2 mb-2">
+              <button type="button" onClick={() => setMediaType('image')}
+                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${mediaType === 'image' ? 'bg-[#D9A657] text-[#182426]' : 'border border-[#74878B]/30 text-[#74878B]'}`}>
+                Photo
+              </button>
+              <button type="button" onClick={() => setMediaType('video')}
+                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${mediaType === 'video' ? 'bg-[#12A89D] text-white' : 'border border-[#74878B]/30 text-[#74878B]'}`}>
+                Vidéo
+              </button>
+            </div>
+            <input ref={fileRef} type="file" accept={mediaType === 'video' ? 'video/*' : 'image/*'} onChange={handleFileChange}
               className="w-full text-gray-400 text-sm file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-[#D9A657]/20 file:text-[#D9A657] file:font-medium cursor-pointer" />
             {uploading && <p className="text-[#12A89D] text-xs mt-1">Upload en cours...</p>}
           </div>
