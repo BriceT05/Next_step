@@ -22,7 +22,7 @@ export default function BackToTop() {
           whileHover={{ scale: 1.12 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-8 right-6 z-50 w-12 h-12 bg-[#D9A657] text-[#182426] rounded-full flex items-center justify-center shadow-xl shadow-[#D9A657]/30"
+          className="fixed bottom-8 right-6 z-50 w-12 h-12 bg-[#C49A00] text-[#013A30] rounded-full flex items-center justify-center shadow-xl shadow-[#C49A00]/30"
           aria-label="Retour en haut"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>

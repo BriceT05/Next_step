@@ -24,7 +24,7 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
             <div className="relative w-14 h-14 rounded-full overflow-hidden ring-2 ring-[#D9A657]/40">
-              <Image src="/logo.jpg" alt="Next Step.sn" fill sizes="56px" className="object-cover" />
+              <Image src="/logo-emblem.png" alt="Next Step.sn" fill sizes="56px" className="object-cover" />
             </div>
           </div>
           <h1 className="text-2xl font-bold text-white">Espace Admin</h1>

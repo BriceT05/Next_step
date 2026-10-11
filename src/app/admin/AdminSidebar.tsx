@@ -20,7 +20,7 @@ export default function AdminSidebar() {
     <aside className="fixed left-0 top-0 h-full w-64 bg-[#182426] border-r border-[#74878B]/15 flex-col hidden md:flex z-40">
       <div className="p-6 border-b border-[#74878B]/15 flex items-center gap-3">
         <div className="relative w-10 h-10 rounded-full overflow-hidden ring-2 ring-[#D9A657]/40">
-          <Image src="/logo.jpg" alt="NS" fill sizes="40px" className="object-cover" />
+          <Image src="/logo-emblem.png" alt="NS" fill sizes="40px" className="object-cover" />
         </div>
         <div>
           <div className="text-white font-bold text-sm">Next Step.sn</div>

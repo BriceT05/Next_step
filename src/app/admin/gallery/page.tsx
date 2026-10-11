@@ -1,11 +1,14 @@
 'use client'
+import { DOMAINS } from '@/app/data/domains'
+import { PROJECTS } from '@/app/data/projects'
 import { useEffect, useRef, useState, useTransition } from 'react'
 import Image from 'next/image'
 import { supabase } from '@/lib/supabase'
 import type { GalleryItem } from '@/lib/supabase'
 import { addGalleryItem, deleteGalleryItem } from '../actions'
 
-const TAGS = ['Événement', 'Formation', 'Tech', 'Conférence', 'Environnement', 'Atelier', 'Réseau', 'Célébration', 'Équipe', 'Terrain', 'Agriculture']
+// Le tag range le média dans la galerie du projet (ou du domaine) du même nom
+const TAGS = [...PROJECTS.map(p => p.title), ...DOMAINS.map(d => d.name), 'Général']
 
 export default function GalleryAdmin() {
   const [items, setItems] = useState<GalleryItem[]>([])

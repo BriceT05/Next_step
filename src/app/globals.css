@@ -1,82 +1,144 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-poppins);
+  --font-hand: var(--font-caveat);
+
+  /* Couleurs de la marque (cahier des charges, 2.1) */
+  --color-ns: #014D40;
+  --color-ns-dark: #013A30;
+  --color-gold: #C49A00;
+  --color-gold-ink: #8A6C00;
+  --color-ink: #1F2A2E;
+  --color-muted: #55636A;
+  --color-cream: #FAF8F3;
+  --color-pearl: #E8E6E1;
+
+  /* Couleur du domaine courant (2.2) : définie par .domain-theme */
+  --color-dc: var(--dc);
+  --color-dc-light: var(--dc-light);
+  --color-dc-deep: var(--dc-deep);
+}
+
+:root {
+  --dc: #014D40;
+  --dc-light: #E6F0EE;
+  --dc-deep: #013A30;
 }
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem;
 }
 
 body {
-  background: #ffffff;
-  color: #182426;
+  background: #FAF8F3;
+  color: #1F2A2E;
   overflow-x: hidden;
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-size: 16px;
+}
+
+@layer base {
+  h1, h2, h3, h4 {
+    font-family: var(--font-poppins), var(--font-inter), system-ui, sans-serif;
+  }
+}
+
+:focus-visible {
+  outline: 3px solid #C49A00;
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar {
-  width: 5px;
+  width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #F5F7F6;
+  background: #FAF8F3;
 }
 ::-webkit-scrollbar-thumb {
-  background: #12A89D;
+  background: #014D40;
   border-radius: 3px;
 }
 
-.gradient-text {
-  background: linear-gradient(135deg, #D9A657, #12A89D);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* Motif boussole en filigrane (touche 10) */
+.compass-watermark {
+  position: relative;
+  isolation: isolate;
+}
+.compass-watermark::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: url("/compass-motif.svg");
+  background-repeat: no-repeat;
+  background-position: right -6rem top -4rem;
+  background-size: 26rem;
+  opacity: 0.06;
+  pointer-events: none;
+}
+.compass-watermark.on-dark::before {
+  background-image: url("/compass-motif-light.svg");
+  opacity: 0.08;
 }
 
-.hero-dots {
-  background-image: radial-gradient(circle, rgba(24,36,38,0.07) 1px, transparent 1px);
-  background-size: 36px 36px;
+/* Bandeaux défilants (partenaires, mur des rêves) */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 40s linear infinite;
+}
+.marquee:hover,
+.marquee:focus-within {
+  animation-play-state: paused;
 }
 
-.section-divider {
-  border-top: 1px solid rgba(229, 234, 235, 0.8);
+/* Carte membre qui se retourne (équipe) */
+.flip {
+  perspective: 1000px;
+}
+.flip-inner {
+  position: relative;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+.flip.is-flipped .flip-inner {
+  transform: rotateY(180deg);
+}
+.flip-face {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.flip-back {
+  position: absolute;
+  inset: 0;
+  transform: rotateY(180deg);
 }
 
-.glass-card {
-  background: #ffffff;
-  box-shadow: 0 1px 4px rgba(24,36,38,0.07), 0 0 0 1px rgba(229,234,235,0.8);
-  border: 1px solid rgba(229,234,235,0.8);
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
 }
 
-@keyframes shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
-
-.shimmer-text {
-  background: linear-gradient(90deg, #D9A657, #12A89D, #D9A657, #12A89D);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: shimmer 4s linear infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-}
-
-.float-anim {
-  animation: float 5s ease-in-out infinite;
-}
-
-@keyframes pulse-ring {
-  0% { transform: scale(0.9); opacity: 0.7; }
-  50% { transform: scale(1.05); opacity: 0.3; }
-  100% { transform: scale(0.9); opacity: 0.7; }
-}
-
-.pulse-ring {
-  animation: pulse-ring 3s ease-in-out infinite;
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .marquee {
+    animation: none;
+    flex-wrap: wrap;
+    width: auto;
+  }
+  .flip-inner {
+    transition: none;
+  }
 }
