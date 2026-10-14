@@ -3,10 +3,12 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import type { Submission } from '@/lib/supabase'
+import { countSubmissions, getSubmissions } from '@/app/admin/actions'
 import { Badge, Card, PageHeader, roleOf } from '@/app/admin/ui'
 
+// Les demandes sont comptées côté serveur (données personnelles) ; les autres tables sont publiques.
 const STATS = [
-  { key: 'submissions', table: 'submissions', label: 'Demandes reçues', href: '/admin/submissions' },
+  { key: 'submissions', table: null, label: 'Demandes reçues', href: '/admin/submissions' },
   { key: 'gallery', table: 'gallery_items', label: 'Photos & vidéos', href: '/admin/gallery' },
   { key: 'news', table: 'news_articles', label: 'Articles publiés', href: '/admin/news' },
   { key: 'partners', table: 'partners', label: 'Partenaires', href: '/admin/partners' },
@@ -27,10 +29,11 @@ export default function DashboardPage() {
   const [latest, setLatest] = useState<Submission[] | null>(null)
 
   useEffect(() => {
-    Promise.all(STATS.map(s => supabase.from(s.table).select('id', { count: 'exact', head: true })))
-      .then(results => setCounts(Object.fromEntries(STATS.map((s, i) => [s.key, results[i].count ?? 0]))))
-    supabase.from('submissions').select('*').order('created_at', { ascending: false }).limit(5)
-      .then(({ data }) => setLatest(data ?? []))
+    Promise.all(STATS.map(s => s.table
+      ? supabase.from(s.table).select('id', { count: 'exact', head: true }).then(r => r.count ?? 0)
+      : countSubmissions()))
+      .then(results => setCounts(Object.fromEntries(STATS.map((s, i) => [s.key, results[i]]))))
+    getSubmissions(5).then(setLatest)
   }, [])
 
   return (

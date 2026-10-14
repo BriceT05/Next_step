@@ -3,6 +3,7 @@
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
+import type { Submission } from '@/lib/supabase'
 
 function adminClient() {
   return createClient(
@@ -105,6 +106,21 @@ export async function addSubmission(data: { role: string; name: string; email: s
   const { createClient } = await import('@supabase/supabase-js')
   const db = createClient(url, key)
   await db.from('submissions').insert(data)
+}
+
+/** Les demandes contiennent des données personnelles : lues uniquement côté serveur (RLS bloque la clé publique). */
+export async function getSubmissions(limit?: number): Promise<Submission[]> {
+  await checkAuth()
+  let q = adminClient().from('submissions').select('*').order('created_at', { ascending: false })
+  if (limit) q = q.limit(limit)
+  const { data } = await q
+  return (data ?? []) as Submission[]
+}
+
+export async function countSubmissions(): Promise<number> {
+  await checkAuth()
+  const { count } = await adminClient().from('submissions').select('id', { count: 'exact', head: true })
+  return count ?? 0
 }
 
 export async function deleteSubmission(id: string) {

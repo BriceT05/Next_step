@@ -1,8 +1,7 @@
 'use client'
 import { useEffect, useMemo, useState, useTransition } from 'react'
-import { supabase } from '@/lib/supabase'
 import type { Submission } from '@/lib/supabase'
-import { deleteSubmission } from '@/app/admin/actions'
+import { deleteSubmission, getSubmissions } from '@/app/admin/actions'
 import { Badge, DeleteButton, Empty, PageHeader, inputCls, roleOf } from '@/app/admin/ui'
 
 const fmt = (iso: string) =>
@@ -14,9 +13,7 @@ export default function SubmissionsPage() {
   const [query, setQuery] = useState('')
   const [isPending, startTransition] = useTransition()
 
-  const fetchSubmissions = () =>
-    supabase.from('submissions').select('*').order('created_at', { ascending: false })
-      .then(({ data }) => setSubmissions(data ?? []))
+  const fetchSubmissions = () => getSubmissions().then(setSubmissions)
 
   useEffect(() => { fetchSubmissions() }, [])
 
