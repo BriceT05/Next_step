@@ -1,7 +1,9 @@
 'use client'
 import { useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { login } from '../actions'
+import { btnPrimary, inputCls } from '../ui'
 
 export default function LoginPage() {
   const [error, setError] = useState('')
@@ -19,42 +21,33 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#182426] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-ns compass-watermark on-dark flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <div className="flex justify-center mb-4">
-            <div className="relative w-14 h-14 rounded-full overflow-hidden ring-2 ring-[#D9A657]/40">
-              <Image src="/logo-emblem.png" alt="Next Step.sn" fill sizes="56px" className="object-cover" />
-            </div>
+          <div className="relative w-16 h-16 mx-auto rounded-full overflow-hidden ring-2 ring-gold/70 bg-white mb-4">
+            <Image src="/logo-emblem.png" alt="Next Step.sn" fill sizes="64px" className="object-cover" />
           </div>
-          <h1 className="text-2xl font-bold text-white">Espace Admin</h1>
-          <p className="text-[#74878B] text-sm mt-1">Next Step.sn</p>
+          <h1 className="font-display text-2xl font-bold text-white">Espace administration</h1>
+          <p className="font-hand text-gold text-2xl mt-1">Ose rêver</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white/3 border border-[#74878B]/20 rounded-2xl p-6 space-y-4">
-          <div>
-            <label className="text-gray-400 text-sm mb-1.5 block">Email</label>
-            <input name="email" type="email" required autoComplete="email"
-              className="w-full bg-white/5 border border-[#74878B]/20 rounded-xl px-4 py-3 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-[#12A89D]/60 transition-colors"
-              placeholder="admin@nextstep.sn" />
-          </div>
-          <div>
-            <label className="text-gray-400 text-sm mb-1.5 block">Mot de passe</label>
-            <input name="password" type="password" required autoComplete="current-password"
-              className="w-full bg-white/5 border border-[#74878B]/20 rounded-xl px-4 py-3 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-[#12A89D]/60 transition-colors"
-              placeholder="••••••••" />
-          </div>
-          {error && <p className="text-red-400 text-sm">{error}</p>}
-          <button type="submit" disabled={loading}
-            className="w-full bg-[#D9A657] text-[#182426] py-3 rounded-xl font-bold text-sm hover:bg-[#c49040] transition-all disabled:opacity-60">
-            {loading ? 'Connexion...' : 'Se connecter'}
+        <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-6 shadow-xl space-y-4">
+          <label className="block">
+            <span className="block text-ink text-sm font-medium mb-1.5">E-mail</span>
+            <input name="email" type="email" required autoComplete="email" className={inputCls} placeholder="admin@nextstep.sn" />
+          </label>
+          <label className="block">
+            <span className="block text-ink text-sm font-medium mb-1.5">Mot de passe</span>
+            <input name="password" type="password" required autoComplete="current-password" className={inputCls} />
+          </label>
+          {error && <p className="text-red-700 text-sm bg-red-50 rounded-lg px-3 py-2" role="alert">{error}</p>}
+          <button type="submit" disabled={loading} className={`${btnPrimary} w-full py-3`}>
+            {loading ? 'Connexion…' : 'Se connecter'}
           </button>
         </form>
 
         <p className="text-center mt-6">
-          <a href="/" className="text-[#74878B] text-sm hover:text-[#D9A657] transition-colors">
-            ← Retour au site
-          </a>
+          <Link href="/" className="text-white/70 text-sm hover:text-white transition-colors">← Retour au site</Link>
         </p>
       </div>
     </div>

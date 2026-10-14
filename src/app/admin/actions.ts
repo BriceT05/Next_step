@@ -34,7 +34,7 @@ export async function login(formData: FormData) {
     maxAge: 60 * 60 * 24 * 7,
     path: '/',
   })
-  redirect('/admin/gallery')
+  redirect('/admin/dashboard')
 }
 
 export async function logout() {
@@ -79,22 +79,6 @@ export async function updateNewsArticle(id: string, data: {
 export async function deleteNewsArticle(id: string) {
   await checkAuth()
   await adminClient().from('news_articles').delete().eq('id', id)
-}
-
-// ── Projects ──────────────────────────────────────────────
-export async function addProject(data: { title: string; description: string; category: string; status: string; image_url: string }) {
-  await checkAuth()
-  await adminClient().from('projects').insert(data)
-}
-
-export async function updateProject(id: string, data: { title: string; description: string; category: string; status: string; image_url: string }) {
-  await checkAuth()
-  await adminClient().from('projects').update(data).eq('id', id)
-}
-
-export async function deleteProject(id: string) {
-  await checkAuth()
-  await adminClient().from('projects').delete().eq('id', id)
 }
 
 // ── Partners ──────────────────────────────────────────────

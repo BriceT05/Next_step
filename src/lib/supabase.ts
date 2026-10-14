@@ -12,10 +12,6 @@ export type NewsArticle = {
   id: string; category: string; category_color: string; title: string; excerpt: string
   date: string; author: string; read_time: string; image_url: string; created_at: string
 }
-export type Project = {
-  id: string; title: string; description: string; category: string; status: string
-  image_url: string; created_at: string
-}
 export type Partner = {
   id: string; name: string; full_name: string; logo_url: string; website?: string; created_at: string
 }
