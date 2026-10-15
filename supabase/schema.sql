@@ -41,6 +41,22 @@ create table if not exists public.partners (
   created_at  timestamptz not null default now()
 );
 
+-- ── Équipe (bureau et domaines) ─────────────────────────────
+-- Un adjoint se rattache à son titulaire par parent_id. Sans domaine, le membre fait partie du bureau.
+create table if not exists public.team_members (
+  id          uuid primary key default gen_random_uuid(),
+  name        text not null,
+  post        text not null default '',
+  role        text not null default 'membre' check (role in ('titulaire', 'adjoint', 'membre')),
+  parent_id   uuid references public.team_members (id) on delete set null,
+  domain_slug text,                       -- slug du domaine (voir src/app/data/domains.ts), vide = bureau
+  photo_url   text not null default '',
+  bio         text not null default '',
+  quote       text not null default '',
+  sort_order  integer not null default 0,
+  created_at  timestamptz not null default now()
+);
+
 -- ── Demandes envoyées par les formulaires du site ───────────
 create table if not exists public.submissions (
   id          uuid primary key default gen_random_uuid(),
@@ -61,6 +77,7 @@ alter table public.gallery_items enable row level security;
 alter table public.news_articles enable row level security;
 alter table public.partners      enable row level security;
 alter table public.submissions   enable row level security;
+alter table public.team_members  enable row level security;
 
 drop policy if exists "lecture publique" on public.gallery_items;
 create policy "lecture publique" on public.gallery_items for select to anon, authenticated using (true);
@@ -70,6 +87,9 @@ create policy "lecture publique" on public.news_articles for select to anon, aut
 
 drop policy if exists "lecture publique" on public.partners;
 create policy "lecture publique" on public.partners for select to anon, authenticated using (true);
+
+drop policy if exists "lecture publique" on public.team_members;
+create policy "lecture publique" on public.team_members for select to anon, authenticated using (true);
 
 -- Les visiteurs peuvent envoyer une demande, avec des tailles raisonnables, mais pas les lire.
 drop policy if exists "envoi depuis le site" on public.submissions;

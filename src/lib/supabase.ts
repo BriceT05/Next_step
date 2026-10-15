@@ -15,6 +15,10 @@ export type NewsArticle = {
 export type Partner = {
   id: string; name: string; full_name: string; logo_url: string; website?: string; created_at: string
 }
+export type TeamMemberRow = {
+  id: string; name: string; post: string; role: 'titulaire' | 'adjoint' | 'membre'; parent_id: string | null
+  domain_slug: string | null; photo_url: string; bio: string; quote: string; sort_order: number; created_at: string
+}
 export type Submission = {
   id: string; role: string; name: string; email: string; phone?: string; message?: string; created_at: string
 }

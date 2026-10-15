@@ -2,8 +2,10 @@
 
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 import { createClient } from '@supabase/supabase-js'
 import type { Submission } from '@/lib/supabase'
+import { TEAM } from '@/app/data/site'
 
 function adminClient() {
   return createClient(
@@ -96,6 +98,56 @@ export async function updatePartner(id: string, data: { name: string; full_name:
 export async function deletePartner(id: string) {
   await checkAuth()
   await adminClient().from('partners').delete().eq('id', id)
+}
+
+// ── Équipe ────────────────────────────────────────────────
+export type TeamMemberInput = {
+  name: string; post: string; role: 'titulaire' | 'adjoint' | 'membre'; parent_id: string | null
+  domain_slug: string | null; photo_url: string; bio: string; quote: string; sort_order: number
+}
+
+/** La page Équipe et les pages domaines affichent les membres : on les régénère tout de suite. */
+function refreshTeamPages() {
+  revalidatePath('/qui-sommes-nous/notre-equipe')
+  revalidatePath('/domaines/[slug]', 'page')
+}
+
+export async function addTeamMember(data: TeamMemberInput) {
+  await checkAuth()
+  const { error } = await adminClient().from('team_members').insert(data)
+  refreshTeamPages()
+  return { error: error?.message }
+}
+
+export async function updateTeamMember(id: string, data: TeamMemberInput) {
+  await checkAuth()
+  const { error } = await adminClient().from('team_members').update(data).eq('id', id)
+  refreshTeamPages()
+  return { error: error?.message }
+}
+
+export async function deleteTeamMember(id: string) {
+  await checkAuth()
+  const { error } = await adminClient().from('team_members').delete().eq('id', id)
+  refreshTeamPages()
+  return { error: error?.message }
+}
+
+/** Recopie l'organigramme par défaut (site.ts) dans la base, pour n'avoir plus qu'à saisir noms et photos. */
+export async function seedTeam() {
+  await checkAuth()
+  const ids = new Map(TEAM.map(m => [m.id, crypto.randomUUID()]))
+  const row = (m: (typeof TEAM)[number]) => ({
+    id: ids.get(m.id)!, name: m.name, post: m.post, role: m.role, parent_id: m.parent ? ids.get(m.parent) ?? null : null,
+    domain_slug: m.domainSlug ?? null, photo_url: m.photo ?? '', bio: m.bio ?? '', quote: m.quote ?? '', sort_order: m.order,
+  })
+  // les titulaires d'abord, pour que les adjoints puissent s'y rattacher
+  const db = adminClient()
+  const first = await db.from('team_members').insert(TEAM.filter(m => !m.parent).map(row))
+  if (first.error) return { error: first.error.message }
+  const second = await db.from('team_members').insert(TEAM.filter(m => m.parent).map(row))
+  refreshTeamPages()
+  return { error: second.error?.message }
 }
 
 // ── Submissions ───────────────────────────────────────────

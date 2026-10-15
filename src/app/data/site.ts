@@ -228,14 +228,16 @@ export const PARTNERS: { name: string; type: PartnerType; logo?: string; website
 ];
 
 /**
- * Équipe (section 6). Les postes, noms et photos sont à fournir par l'association.
+ * Équipe (section 6) : organigramme par défaut, affiché tant que l'admin n'a rien enregistré
+ * (les vrais noms et photos se gèrent dans Administration > Équipe, table team_members).
  * Un adjoint se rattache à son titulaire par `parent`. Le site recompose l'arbre tout seul.
+ * Un « membre » n'a pas de poste à responsabilité : il apparaît dans la grille sous l'arbre.
  */
 export interface Member {
   id: string;
   name: string;
   post: string;
-  role: "titulaire" | "adjoint";
+  role: "titulaire" | "adjoint" | "membre";
   parent?: string;
   domainSlug?: string;
   photo?: string;
@@ -248,9 +250,8 @@ export interface Member {
 const TBD = "Nom à venir";
 
 export const TEAM: Member[] = [
-  { id: "coord", name: TBD, post: "Coordinateur général", role: "titulaire", order: 1 },
-  { id: "coord-a1", name: TBD, post: "Coordinateur adjoint", role: "adjoint", parent: "coord", order: 1 },
-  { id: "coord-a2", name: TBD, post: "Coordinateur adjoint", role: "adjoint", parent: "coord", order: 2 },
+  { id: "pres", name: TBD, post: "Président", role: "titulaire", order: 1 },
+  { id: "pres-vp", name: TBD, post: "Vice-présidente", role: "adjoint", parent: "pres", order: 1 },
   { id: "sec", name: TBD, post: "Secrétariat", role: "titulaire", order: 2 },
   { id: "sec-a1", name: TBD, post: "Secrétaire adjoint", role: "adjoint", parent: "sec", order: 1 },
   { id: "tres", name: TBD, post: "Trésorerie", role: "titulaire", order: 3 },

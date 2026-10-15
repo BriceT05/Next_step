@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Partner } from "@/lib/supabase";
 import type { Media } from "@/lib/content";
 import { DOMAINS, domainTheme } from "@/app/data/domains";
-import { HISTORY, MISSION, PARTNER_TYPES, PARTNERS, type PartnerType, SITE, SOCIALS, VALUES, VISION, whatsappLink } from "@/app/data/site";
+import { HISTORY, type Member, MISSION, PARTNER_TYPES, PARTNERS, type PartnerType, SITE, SOCIALS, VALUES, VISION, whatsappLink } from "@/app/data/site";
 import { BureauTree, DomainTeams, RegionMap, StepsPath } from "./about-widgets";
 import { JoinForms, SiteForm } from "./Forms";
 import { ArrowIcon, DomainIcon, SocialIcon, WhatsAppIcon } from "./icons";
@@ -127,26 +127,27 @@ export function MissionView() {
 
 /* ── Notre équipe ────────────────────────────────────────────────────────── */
 
-export function TeamView() {
+export function TeamView({ team }: { team: Member[] }) {
+  const incomplete = team.some((m) => m.name === "Nom à venir");
   return (
     <>
       <PageHero
         kicker="Les visages de Next Step.sn"
         title="Notre équipe"
-        text="Chaque poste a son titulaire, entouré de ses adjoints. Ensemble, ils font avancer l'association."
+        text="Le président et la vice-présidente sont à la tête de l'association. Chaque poste a son titulaire, entouré de ses adjoints. Ensemble, ils font avancer Next Step.sn."
         crumbs={[about, { label: "Notre équipe" }]}
       />
       <section className="compass-watermark overflow-hidden">
         <div className={`${wrap} py-14 sm:py-20`}>
           <SectionTitle kicker="Bureau exécutif" title="Le bureau" />
-          <BureauTree />
+          <BureauTree team={team} />
         </div>
       </section>
       <section className="bg-white">
         <div className={`${wrap} py-14 sm:py-20`}>
           <SectionTitle kicker="Responsables de domaine" title="Les cinq domaines" />
-          <DomainTeams />
-          <p className="text-center text-muted text-sm mt-10">Les noms et les photos de l&apos;équipe seront ajoutés prochainement.</p>
+          <DomainTeams team={team} />
+          {incomplete && <p className="text-center text-muted text-sm mt-10">Les noms et les photos de l&apos;équipe seront ajoutés prochainement.</p>}
         </div>
       </section>
       <FinalCta />

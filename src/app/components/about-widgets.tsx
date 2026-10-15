@@ -10,7 +10,6 @@ import {
   type Member,
   REGION_PROJECTS,
   REGIONS,
-  TEAM,
 } from "@/app/data/site";
 import { SmartImage } from "./ui";
 
@@ -104,7 +103,7 @@ function MemberCard({ member, lead }: { member: Member; lead: boolean }) {
         {member.photo ? <SmartImage src={member.photo} alt={member.name} sizes="128px" /> : <span aria-hidden>{initials(member)}</span>}
       </div>
       <p className={`font-display font-bold text-ink mt-4 leading-tight ${lead ? "text-lg" : "text-base"}`}>{member.name}</p>
-      <p className="text-muted text-sm leading-snug">{member.post}</p>
+      {member.post && <p className="text-muted text-sm leading-snug">{member.post}</p>}
       {domain && (
         <span className="mt-2 inline-block bg-dc-light text-dc-deep text-[11px] font-bold px-2.5 py-0.5 rounded-full">{domain.name}</span>
       )}
@@ -191,31 +190,61 @@ function PostTree({ lead, deputies }: { lead: Member; deputies: Member[] }) {
 
 const byOrder = (a: Member, b: Member) => a.order - b.order;
 
-function trees(filter: (m: Member) => boolean) {
-  return TEAM.filter((m) => m.role === "titulaire" && filter(m))
-    .sort(byOrder)
-    .map((lead) => ({ lead, deputies: TEAM.filter((m) => m.parent === lead.id).sort(byOrder) }));
+/** Découpe une section de l'équipe : arbres titulaire → adjoints, puis les autres membres en grille. */
+function split(team: Member[], filter: (m: Member) => boolean) {
+  const list = team.filter(filter);
+  const leads = list.filter((m) => m.role === "titulaire").sort(byOrder);
+  const leadIds = new Set(leads.map((l) => l.id));
+  return {
+    trees: leads.map((lead) => ({ lead, deputies: list.filter((m) => m.role === "adjoint" && m.parent === lead.id).sort(byOrder) })),
+    // un adjoint dont le titulaire a été supprimé reste visible parmi les membres
+    members: list.filter((m) => m.role === "membre" || (m.role === "adjoint" && !leadIds.has(m.parent ?? ""))).sort(byOrder),
+  };
 }
 
-/** Bureau exécutif : les postes sans domaine. */
-export function BureauTree() {
+function MemberGrid({ members }: { members: Member[] }) {
+  if (members.length === 0) return null;
   return (
-    <div className="space-y-14">
-      {trees((m) => !m.domainSlug).map((t) => (
-        <PostTree key={t.lead.id} {...t} />
-      ))}
+    <div className="mt-14">
+      <p className="text-center font-display font-bold text-lg text-ink mb-6">Les membres</p>
+      <ul className="flex flex-wrap justify-center gap-x-4 gap-y-8 sm:gap-x-6">
+        {members.map((m) => (
+          <li key={m.id}>
+            <MemberCard member={m} lead={false} />
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
 
+/** Bureau exécutif : les postes sans domaine, président et vice-présidente en tête. */
+export function BureauTree({ team }: { team: Member[] }) {
+  const { trees, members } = split(team, (m) => !m.domainSlug);
+  return (
+    <>
+      <div className="space-y-14">
+        {trees.map((t) => (
+          <PostTree key={t.lead.id} {...t} />
+        ))}
+      </div>
+      <MemberGrid members={members} />
+    </>
+  );
+}
+
 /** Équipe d'un domaine, dans sa couleur. Sans `slug`, affiche les cinq domaines. */
-export function DomainTeams({ slug }: { slug?: string }) {
+export function DomainTeams({ team, slug }: { team: Member[]; slug?: string }) {
   const domains = slug ? DOMAINS.filter((d) => d.slug === slug) : DOMAINS;
   return (
     <div className={slug ? "" : "grid lg:grid-cols-2 gap-6"}>
       {domains.map((d) => {
-        const list = trees((m) => m.domainSlug === d.slug);
-        if (list.length === 0) return null;
+        const { trees, members } = split(team, (m) => m.domainSlug === d.slug);
+        if (trees.length === 0 && members.length === 0) {
+          return slug ? (
+            <p key={d.slug} className="text-center text-muted">Les membres de l&apos;équipe {d.name} seront présentés prochainement.</p>
+          ) : null;
+        }
         return (
           <section key={d.slug} style={domainTheme(d)} className={slug ? "" : "rounded-3xl bg-dc-light border-t-8 border-dc p-6 sm:p-8"}>
             {!slug && (
@@ -224,10 +253,11 @@ export function DomainTeams({ slug }: { slug?: string }) {
               </h3>
             )}
             <div className="space-y-12">
-              {list.map((t) => (
+              {trees.map((t) => (
                 <PostTree key={t.lead.id} {...t} />
               ))}
             </div>
+            <MemberGrid members={members} />
           </section>
         );
       })}

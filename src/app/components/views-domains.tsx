@@ -3,6 +3,7 @@ import type { NewsArticle } from "@/lib/supabase";
 import type { Media } from "@/lib/content";
 import { type Domain, DOMAINS, domainTheme, getDomainBySlug } from "@/app/data/domains";
 import { type ProjectData, getProjectsByDomain } from "@/app/data/projects";
+import type { Member } from "@/app/data/site";
 import { DomainTeams } from "./about-widgets";
 import { Reveal } from "./home-widgets";
 import { ActivityIcon, ArrowIcon, DomainIcon } from "./icons";
@@ -91,7 +92,7 @@ export function DomainsListView() {
 
 /* ── Page d'un domaine ───────────────────────────────────────────────────── */
 
-export function DomainView({ domain, media }: { domain: Domain; media: Media[] }) {
+export function DomainView({ domain, media, team }: { domain: Domain; media: Media[]; team: Member[] }) {
   const projects = getProjectsByDomain(domain.slug);
   const domainMedia = media.filter((m) => m.domainSlug === domain.slug).slice(0, 8);
 
@@ -157,7 +158,7 @@ export function DomainView({ domain, media }: { domain: Domain; media: Media[] }
       <section className="bg-white">
         <div className={`${wrap} py-14 sm:py-20`}>
           <h2 className="font-display font-bold text-3xl text-dc-deep text-center mb-10">L&apos;équipe {domain.name}</h2>
-          <DomainTeams slug={domain.slug} />
+          <DomainTeams team={team} slug={domain.slug} />
         </div>
       </section>
 

@@ -1,7 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
-import type { GalleryItem, NewsArticle, Partner } from "@/lib/supabase";
+import type { GalleryItem, NewsArticle, Partner, TeamMemberRow } from "@/lib/supabase";
 import { DOMAINS } from "@/app/data/domains";
 import { PROJECTS } from "@/app/data/projects";
+import { type Member, TEAM } from "@/app/data/site";
 
 /** Média affiché sur le site, relié si possible à un projet et à un domaine. */
 export interface Media {
@@ -85,5 +86,33 @@ export async function getDbPartners(): Promise<Partner[]> {
     return (data ?? []) as Partner[];
   } catch {
     return [];
+  }
+}
+
+export function toMember(row: TeamMemberRow): Member {
+  return {
+    id: row.id,
+    name: row.name,
+    post: row.post,
+    role: row.role,
+    parent: row.parent_id ?? undefined,
+    domainSlug: row.domain_slug || undefined,
+    photo: row.photo_url || undefined,
+    bio: row.bio || undefined,
+    quote: row.quote || undefined,
+    order: row.sort_order,
+  };
+}
+
+/** L'équipe saisie dans l'admin ; tant qu'elle est vide, l'organigramme par défaut de site.ts. */
+export async function getTeam(): Promise<Member[]> {
+  const client = db();
+  if (!client) return TEAM;
+  try {
+    const { data } = await client.from("team_members").select("*").order("sort_order", { ascending: true });
+    const rows = (data ?? []) as TeamMemberRow[];
+    return rows.length > 0 ? rows.map(toMember) : TEAM;
+  } catch {
+    return TEAM;
   }
 }
