@@ -4,14 +4,9 @@ import Link from "next/link";
 import { motion, useReducedMotion, useScroll, useSpring } from "framer-motion";
 import { DOMAINS, domainTheme, getDomainBySlug } from "@/app/data/domains";
 import { findProject } from "@/lib/projects";
-import type { HistoryStep } from "@/lib/settings";
+import type { HistoryStep, RegionsSettings } from "@/lib/settings";
 import { useProjects } from "./SiteDataContext";
-import {
-  DEFAULT_REGION_PROJECTS,
-  type Member,
-  REGION_PROJECTS,
-  REGIONS,
-} from "@/app/data/site";
+import { type Member, REGIONS } from "@/app/data/site";
 import { SmartImage } from "./ui";
 
 /* ── L'histoire « pas à pas » (touche 3) ─────────────────────────────────── */
@@ -268,11 +263,11 @@ export function DomainTeams({ team, slug }: { team: Member[]; slug?: string }) {
 
 /* ── La carte des 14 régions (touche 4) ──────────────────────────────────── */
 
-export function RegionMap() {
+export function RegionMap({ regions }: { regions: RegionsSettings }) {
   const [active, setActive] = useState("Dakar");
-  const region = REGIONS.find((r) => r.name === active)!;
+  const region = { ...REGIONS.find((r) => r.name === active)!, done: regions[active]?.done ?? [] };
   const allProjects = useProjects();
-  const projects = (REGION_PROJECTS[active] ?? DEFAULT_REGION_PROJECTS)
+  const projects = (regions[active]?.projects ?? [])
     .map((s) => findProject(allProjects, s))
     .filter((p) => p !== undefined);
 
@@ -295,7 +290,7 @@ export function RegionMap() {
                 className={`aspect-[4/3] rounded-2xl text-[11px] sm:text-sm font-bold leading-tight px-1 transition-all ${
                   on
                     ? "bg-gold text-ink scale-105 shadow-lg"
-                    : r.done
+                    : regions[r.name]?.done.length
                       ? "bg-ns text-white hover:bg-ns-dark"
                       : "bg-ns/80 text-white hover:bg-ns"
                 }`}
@@ -311,7 +306,7 @@ export function RegionMap() {
       <div className="bg-white rounded-3xl border border-pearl p-6 shadow-sm" aria-live="polite">
         <p className="text-gold-ink font-bold text-sm uppercase tracking-wide">Région</p>
         <h3 className="font-display font-bold text-2xl text-ns">{region.name}</h3>
-        {region.done && (
+        {region.done.length > 0 && (
           <>
             <p className="font-semibold text-ink mt-4">Déjà réalisé</p>
             <ul className="list-disc pl-5 text-muted mt-1 space-y-1">

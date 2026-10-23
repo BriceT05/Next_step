@@ -120,7 +120,7 @@ export function MissionView({ settings }: { settings: SiteSettings }) {
             title="Présente dans les 14 régions"
             text="Touche une région pour voir les actions réalisées et les projets prévus."
           />
-          <RegionMap />
+          <RegionMap regions={settings.regions} />
         </div>
       </section>
       <FinalCta />

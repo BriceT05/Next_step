@@ -1,5 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { HISTORY, HISTORY_STEPS, MISSION, NEXT_EVENT, SITE, SOCIALS, STATS, VALUES, VISION } from "@/app/data/site";
+import {
+  DEFAULT_REGION_PROJECTS, HISTORY, HISTORY_STEPS, MISSION, NEXT_EVENT, REGION_PROJECTS, REGIONS, SITE, SOCIALS, STATS, VALUES, VISION,
+} from "@/app/data/site";
 import { type DomainOverrides, applyDomainOverrides, clientDomainOverrides } from "@/lib/domains";
 
 /**
@@ -59,7 +61,16 @@ export type SiteSettings = GeneralSettings & {
   about: AboutSettings;
   /** Textes des domaines modifiés dans l'admin (voir lib/domains.ts) */
   domains: DomainOverrides;
+  /** Carte des 14 régions : actions réalisées et projets prévus, par nom de région */
+  regions: RegionsSettings;
 };
+
+export type RegionInfo = { done: string[]; projects: string[] };
+export type RegionsSettings = Record<string, RegionInfo>;
+
+export const DEFAULT_REGIONS: RegionsSettings = Object.fromEntries(
+  REGIONS.map((r) => [r.name, { done: r.done ?? [], projects: REGION_PROJECTS[r.name] ?? DEFAULT_REGION_PROJECTS }]),
+);
 
 /** Ce que les composants côté navigateur reçoivent : les longs textes restent sur leurs pages. */
 export type ClientSettings = Omit<SiteSettings, "history" | "about">;
@@ -101,6 +112,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   history: DEFAULT_HISTORY,
   about: DEFAULT_ABOUT,
   domains: {},
+  regions: DEFAULT_REGIONS,
 };
 
 /** « +221 77 860 51 82 » → « 221778605182 » (format attendu par wa.me et tel:) */
@@ -114,6 +126,7 @@ export function normalizeSettings(
   history: Partial<HistorySettings> | null = null,
   about: Partial<AboutSettings> | null = null,
   domains: DomainOverrides | null = null,
+  regions: RegionsSettings | null = null,
 ): SiteSettings {
   const g = { ...DEFAULT_GENERAL, ...(general ?? {}) };
   return {
@@ -127,6 +140,7 @@ export function normalizeSettings(
     history: { ...DEFAULT_HISTORY, ...(history ?? {}) },
     about: { ...DEFAULT_ABOUT, ...(about ?? {}) },
     domains: domains ?? {},
+    regions: Object.fromEntries(REGIONS.map((r) => [r.name, { ...DEFAULT_REGIONS[r.name], ...(regions?.[r.name] ?? {}) }])),
   };
 }
 
@@ -136,7 +150,7 @@ export async function fetchSettings(client: SupabaseClient | null): Promise<Site
     const { data, error } = await client.from("site_settings").select("key, value");
     if (error || !data) return normalizeSettings(null, null);
     const get = (key: string) => data.find((r) => r.key === key)?.value ?? null;
-    const settings = normalizeSettings(get("general"), get("stats"), get("event"), get("history"), get("about"), get("domains"));
+    const settings = normalizeSettings(get("general"), get("stats"), get("event"), get("history"), get("about"), get("domains"), get("regions"));
     applyDomainOverrides(settings.domains);
     return settings;
   } catch {

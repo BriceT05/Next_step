@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@supabase/supabase-js'
 import type { NewsArticle, Submission, SubmissionStatus } from '@/lib/supabase'
-import { PARTNER_TYPES, PARTNERS, type PartnerType, TEAM } from '@/app/data/site'
+import { PARTNER_TYPES, PARTNERS, type PartnerType, REGIONS, TEAM } from '@/app/data/site'
 import { DOMAINS } from '@/app/data/domains'
 import { PROJECTS, STATUS_LABEL, type ProjectData } from '@/app/data/projects'
 import { projectToRow } from '@/lib/projects'
@@ -15,7 +15,8 @@ import {
   storeCredentials,
 } from '@/lib/admin-auth'
 import {
-  type AboutSettings, type EventSettings, type GeneralSettings, type HistorySettings, type Stat, SOCIAL_NETWORKS, phoneDigits,
+  type AboutSettings, type EventSettings, type GeneralSettings, type HistorySettings, type RegionsSettings, type Stat,
+  SOCIAL_NETWORKS, phoneDigits,
 } from '@/lib/settings'
 
 function adminClient() {
@@ -377,7 +378,7 @@ export async function moveProject(slug: string, step: -1 | 1) {
 }
 
 // ── Réglages généraux ─────────────────────────────────────
-async function saveSetting(key: 'general' | 'stats' | 'event' | 'history' | 'about' | 'domains', value: unknown) {
+async function saveSetting(key: 'general' | 'stats' | 'event' | 'history' | 'about' | 'domains' | 'regions', value: unknown) {
   const { error } = await adminClient().from('site_settings')
     .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' })
   if (error) return { error: error.message }
@@ -443,6 +444,15 @@ export async function saveDomain(slug: string, input: DomainText) {
     cover: clean(input.cover), presentation: (input.presentation ?? []).map(clean).filter(Boolean),
   }
   return saveSetting('domains', all)
+}
+
+export async function saveRegions(input: RegionsSettings) {
+  await checkAuth()
+  const regions: RegionsSettings = Object.fromEntries(REGIONS.map(r => [r.name, {
+    done: (input[r.name]?.done ?? []).map(clean).filter(Boolean),
+    projects: (input[r.name]?.projects ?? []).map(clean).filter(Boolean),
+  }]))
+  return saveSetting('regions', regions)
 }
 
 export async function saveHistory(input: HistorySettings) {
