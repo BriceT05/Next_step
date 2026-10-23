@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { HISTORY, HISTORY_STEPS, MISSION, NEXT_EVENT, SITE, SOCIALS, STATS, VALUES, VISION } from "@/app/data/site";
+import { type DomainOverrides, applyDomainOverrides, clientDomainOverrides } from "@/lib/domains";
 
 /**
  * Réglages généraux modifiables depuis l'admin (table `site_settings`, une ligne par clé).
@@ -56,13 +57,24 @@ export type SiteSettings = GeneralSettings & {
   event: EventSettings;
   history: HistorySettings;
   about: AboutSettings;
+  /** Textes des domaines modifiés dans l'admin (voir lib/domains.ts) */
+  domains: DomainOverrides;
 };
 
 /** Ce que les composants côté navigateur reçoivent : les longs textes restent sur leurs pages. */
 export type ClientSettings = Omit<SiteSettings, "history" | "about">;
 
 export function toClientSettings(s: SiteSettings): ClientSettings {
-  return { slogan: s.slogan, city: s.city, email: s.email, phones: s.phones, socials: s.socials, stats: s.stats, event: s.event };
+  return {
+    slogan: s.slogan,
+    city: s.city,
+    email: s.email,
+    phones: s.phones,
+    socials: s.socials,
+    stats: s.stats,
+    event: s.event,
+    domains: clientDomainOverrides(s.domains),
+  };
 }
 
 export const DEFAULT_HISTORY: HistorySettings = { ...HISTORY, steps: HISTORY_STEPS };
@@ -88,6 +100,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   event: DEFAULT_EVENT,
   history: DEFAULT_HISTORY,
   about: DEFAULT_ABOUT,
+  domains: {},
 };
 
 /** « +221 77 860 51 82 » → « 221778605182 » (format attendu par wa.me et tel:) */
@@ -100,6 +113,7 @@ export function normalizeSettings(
   event: Partial<EventSettings> | null = null,
   history: Partial<HistorySettings> | null = null,
   about: Partial<AboutSettings> | null = null,
+  domains: DomainOverrides | null = null,
 ): SiteSettings {
   const g = { ...DEFAULT_GENERAL, ...(general ?? {}) };
   return {
@@ -112,6 +126,7 @@ export function normalizeSettings(
     event: { ...DEFAULT_EVENT, ...(event ?? {}) },
     history: { ...DEFAULT_HISTORY, ...(history ?? {}) },
     about: { ...DEFAULT_ABOUT, ...(about ?? {}) },
+    domains: domains ?? {},
   };
 }
 
@@ -121,7 +136,9 @@ export async function fetchSettings(client: SupabaseClient | null): Promise<Site
     const { data, error } = await client.from("site_settings").select("key, value");
     if (error || !data) return normalizeSettings(null, null);
     const get = (key: string) => data.find((r) => r.key === key)?.value ?? null;
-    return normalizeSettings(get("general"), get("stats"), get("event"), get("history"), get("about"));
+    const settings = normalizeSettings(get("general"), get("stats"), get("event"), get("history"), get("about"), get("domains"));
+    applyDomainOverrides(settings.domains);
+    return settings;
   } catch {
     return normalizeSettings(null, null);
   }

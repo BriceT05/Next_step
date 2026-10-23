@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createClient } from "@supabase/supabase-js";
 import type { GalleryItem, NewsArticle, Partner, TeamMemberRow } from "@/lib/supabase";
 import { DOMAINS } from "@/app/data/domains";
@@ -58,15 +59,20 @@ export function toMedia(item: GalleryItem, projects: ProjectData[] = PROJECTS): 
 
 /** Les projets saisis dans l'admin ; tant qu'il n'y en a aucun, les six projets par défaut. */
 export async function getProjects(): Promise<ProjectData[]> {
+  await getSettings(); // textes des domaines (voir plus bas)
   return fetchProjects(db());
 }
 
 /** Coordonnées, réseaux sociaux et chiffres clés saisis dans l'admin (valeurs par défaut sinon). */
-export async function getSettings(): Promise<SiteSettings> {
-  return fetchSettings(db());
-}
+/**
+ * Lu une seule fois par requête (cache de React). Lire les réglages applique aussi les textes des domaines
+ * saisis dans l'admin (voir lib/domains.ts) : les fonctions qui servent des pages affichant des domaines
+ * (projets, médias, équipe) l'appellent donc avant de répondre.
+ */
+export const getSettings = cache(async (): Promise<SiteSettings> => fetchSettings(db()));
 
 export async function getMedia(): Promise<Media[]> {
+  await getSettings();
   const client = db();
   if (!client) return [];
   try {
@@ -121,6 +127,7 @@ export function toMember(row: TeamMemberRow): Member {
 
 /** L'équipe saisie dans l'admin ; tant qu'elle est vide, l'organigramme par défaut de site.ts. */
 export async function getTeam(): Promise<Member[]> {
+  await getSettings();
   const client = db();
   if (!client) return TEAM;
   try {

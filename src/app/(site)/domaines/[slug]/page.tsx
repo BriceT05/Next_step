@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DOMAINS, getDomainBySlug } from "@/app/data/domains";
-import { getMedia, getProjects, getTeam } from "@/lib/content";
+import { getMedia, getProjects, getSettings, getTeam } from "@/lib/content";
 import { DomainView } from "../../../components/views-domains";
 
 export const revalidate = 300;
@@ -12,6 +12,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
+  await getSettings(); // applique les textes du domaine saisis dans l'admin
   const domain = getDomainBySlug(slug);
   if (!domain) return { title: "Domaine introuvable" };
   const title = `${domain.name} — ${domain.theme}`;
@@ -24,6 +25,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function DomainPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  await getSettings(); // applique les textes du domaine saisis dans l'admin
   const domain = getDomainBySlug(slug);
   if (!domain) notFound();
   const [media, team, projects] = await Promise.all([getMedia(), getTeam(), getProjects()]);

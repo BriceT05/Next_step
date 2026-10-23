@@ -9,6 +9,7 @@ import { PARTNER_TYPES, PARTNERS, type PartnerType, TEAM } from '@/app/data/site
 import { DOMAINS } from '@/app/data/domains'
 import { PROJECTS, STATUS_LABEL, type ProjectData } from '@/app/data/projects'
 import { projectToRow } from '@/lib/projects'
+import type { DomainOverrides, DomainText } from '@/lib/domains'
 import {
   MIN_PASSWORD_LENGTH, SESSION_COOKIE, checkCredentials, currentAdminEmail, getStoredCredentials, isValidSession, sessionValue,
   storeCredentials,
@@ -376,7 +377,7 @@ export async function moveProject(slug: string, step: -1 | 1) {
 }
 
 // ── Réglages généraux ─────────────────────────────────────
-async function saveSetting(key: 'general' | 'stats' | 'event' | 'history' | 'about', value: unknown) {
+async function saveSetting(key: 'general' | 'stats' | 'event' | 'history' | 'about' | 'domains', value: unknown) {
   const { error } = await adminClient().from('site_settings')
     .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' })
   if (error) return { error: error.message }
@@ -428,6 +429,20 @@ export async function saveEvent(input: EventSettings) {
   if (!DOMAINS.some(d => d.slug === event.domainSlug)) return { error: 'Choisis le domaine (il donne la couleur du bloc).' }
   if (event.href && !event.href.startsWith('/') && !event.href.startsWith('https://')) return { error: 'Le lien du bouton doit commencer par / (page du site) ou https://' }
   return saveSetting('event', event)
+}
+
+/** Textes d'un domaine ; un champ vide reprend le texte d'origine. */
+export async function saveDomain(slug: string, input: DomainText) {
+  await checkAuth()
+  if (!DOMAINS.some(d => d.slug === slug)) return { error: 'Domaine inconnu.' }
+  const { data, error } = await adminClient().from('site_settings').select('value').eq('key', 'domains').maybeSingle()
+  if (error) return { error: error.message }
+  const all = ((data?.value as DomainOverrides | undefined) ?? {})
+  all[slug] = {
+    name: clean(input.name), theme: clean(input.theme), slogan: clean(input.slogan), mission: clean(input.mission),
+    cover: clean(input.cover), presentation: (input.presentation ?? []).map(clean).filter(Boolean),
+  }
+  return saveSetting('domains', all)
 }
 
 export async function saveHistory(input: HistorySettings) {

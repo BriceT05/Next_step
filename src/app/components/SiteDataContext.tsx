@@ -2,6 +2,7 @@
 import { createContext, useContext } from "react";
 import { PROJECTS, type ProjectData } from "@/app/data/projects";
 import { type ClientSettings, DEFAULT_SETTINGS, toClientSettings, whatsappHref } from "@/lib/settings";
+import { applyDomainOverrides } from "@/lib/domains";
 
 /**
  * Données lues en base par le layout du site (projets et réglages généraux),
@@ -12,6 +13,8 @@ type SiteData = { projects: ProjectData[]; settings: ClientSettings };
 const SiteDataContext = createContext<SiteData>({ projects: PROJECTS, settings: toClientSettings(DEFAULT_SETTINGS) });
 
 export function SiteDataProvider({ projects, settings, children }: SiteData & { children: React.ReactNode }) {
+  // Les textes des domaines saisis dans l'admin, appliqués avant l'affichage des composants (voir lib/domains.ts)
+  applyDomainOverrides(settings.domains);
   return <SiteDataContext.Provider value={{ projects, settings }}>{children}</SiteDataContext.Provider>;
 }
 
