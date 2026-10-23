@@ -15,6 +15,14 @@ export const SUBMISSION_ROLES: Record<string, { label: string; color: string }> 
   participant: { label: 'Participant', color: '#55636A' },
 }
 
+/** Suivi des demandes reçues. */
+export const SUBMISSION_STATUSES: Record<string, { label: string; color: string }> = {
+  nouvelle: { label: 'Nouvelle', color: '#C2386B' },
+  'en-cours': { label: 'En cours', color: '#D9822B' },
+  traitee: { label: 'Traitée', color: '#3C8D4F' },
+  archivee: { label: 'Archivée', color: '#55636A' },
+}
+
 export const roleOf = (role: string) => SUBMISSION_ROLES[role] ?? { label: role, color: '#55636A' }
 
 export const inputCls =

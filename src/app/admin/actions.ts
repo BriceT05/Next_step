@@ -4,7 +4,7 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@supabase/supabase-js'
-import type { NewsArticle, Submission } from '@/lib/supabase'
+import type { NewsArticle, Submission, SubmissionStatus } from '@/lib/supabase'
 import { PARTNER_TYPES, PARTNERS, type PartnerType, TEAM } from '@/app/data/site'
 import { DOMAINS } from '@/app/data/domains'
 import { PROJECTS, STATUS_LABEL, type ProjectData } from '@/app/data/projects'
@@ -447,4 +447,19 @@ export async function countSubmissions(): Promise<number> {
 export async function deleteSubmission(id: string) {
   await checkAuth()
   await adminClient().from('submissions').delete().eq('id', id)
+}
+
+const STATUSES: SubmissionStatus[] = ['nouvelle', 'en-cours', 'traitee', 'archivee']
+
+/** Change le statut et/ou les notes internes d'une demande. */
+export async function updateSubmission(id: string, patch: { status?: SubmissionStatus; notes?: string }) {
+  await checkAuth()
+  const data: { status?: SubmissionStatus; notes?: string } = {}
+  if (patch.status !== undefined) {
+    if (!STATUSES.includes(patch.status)) return { error: 'Statut inconnu.' }
+    data.status = patch.status
+  }
+  if (patch.notes !== undefined) data.notes = patch.notes.slice(0, 5000)
+  const { error } = await adminClient().from('submissions').update(data).eq('id', id)
+  return { error: error?.message }
 }

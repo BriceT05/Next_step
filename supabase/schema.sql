@@ -102,6 +102,11 @@ create index if not exists gallery_items_created_at_idx on public.gallery_items 
 create index if not exists news_articles_created_at_idx on public.news_articles (created_at desc);
 create index if not exists submissions_created_at_idx on public.submissions (created_at desc);
 
+-- Suivi des demandes dans l'admin (octobre 2026) : statut et notes internes, jamais visibles par le public.
+alter table public.submissions add column if not exists status text not null default 'nouvelle'
+  check (status in ('nouvelle', 'en-cours', 'traitee', 'archivee'));
+alter table public.submissions add column if not exists notes text not null default '';
+
 -- ── RLS ─────────────────────────────────────────────────────
 alter table public.gallery_items enable row level security;
 alter table public.news_articles enable row level security;

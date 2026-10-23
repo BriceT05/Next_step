@@ -27,6 +27,10 @@ export type TeamMemberRow = {
   id: string; name: string; post: string; role: 'titulaire' | 'adjoint' | 'membre'; parent_id: string | null
   domain_slug: string | null; photo_url: string; bio: string; quote: string; sort_order: number; created_at: string
 }
+export type SubmissionStatus = 'nouvelle' | 'en-cours' | 'traitee' | 'archivee'
 export type Submission = {
   id: string; role: string; name: string; email: string; phone?: string; message?: string; created_at: string
+  /** Suivi dans l'admin (absent tant que la colonne n'existe pas : traiter comme « nouvelle ») */
+  status?: SubmissionStatus
+  notes?: string
 }
