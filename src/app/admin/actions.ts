@@ -97,6 +97,16 @@ export async function addGalleryItem(data: { label: string; sub: string; tag: st
   refreshSite()
 }
 
+/** Plusieurs photos d'un coup (envoi groupé). */
+export async function addGalleryItems(items: { label: string; sub: string; tag: string; image_url: string }[]) {
+  await checkAuth()
+  const rows = items.filter(i => i.image_url && i.label.trim()).slice(0, 50)
+  if (rows.length === 0) return { error: 'Aucune photo à enregistrer.' }
+  const { error } = await adminClient().from('gallery_items').insert(rows)
+  refreshSite()
+  return { error: error?.message }
+}
+
 export async function updateGalleryItem(id: string, data: { label: string; sub: string; tag: string; image_url: string; video_url?: string }) {
   await checkAuth()
   await adminClient().from('gallery_items').update(data).eq('id', id)

@@ -5,7 +5,7 @@ import { DOMAINS } from '@/app/data/domains'
 import { PROJECTS, type ProjectData } from '@/app/data/projects'
 import { supabase } from '@/lib/supabase'
 import type { GalleryItem } from '@/lib/supabase'
-import { addGalleryItem, deleteGalleryItem, updateGalleryItem } from '@/app/admin/actions'
+import { addGalleryItem, addGalleryItems, deleteGalleryItem, updateGalleryItem } from '@/app/admin/actions'
 import { useAdminProjects } from '@/app/admin/useAdminProjects'
 import {
   Badge, Card, DeleteButton, EditButton, EditingNotice, Empty, Field, FileUpload, Loading, PageHeader, btnGhost, btnPrimary, inputCls,
@@ -170,6 +170,12 @@ export default function GalleryAdmin({ searchParams }: { searchParams: Promise<{
       </Card>
       </div>
 
+      {!editing && (
+        <div className="mb-10">
+          <BulkUpload projects={projects} defaultTag={tag} onDone={fetchItems} />
+        </div>
+      )}
+
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <h2 className="font-display font-semibold text-ink text-lg">
           Médias en ligne {items && <span className="text-muted font-normal">({visible.length})</span>}
@@ -214,5 +220,128 @@ export default function GalleryAdmin({ searchParams }: { searchParams: Promise<{
         </div>
       )}
     </div>
+  )
+}
+
+/** Nom de fichier → titre lisible : « salon-kolda_2026.jpg » → « salon kolda 2026 » */
+const titleFromFile = (name: string) => name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').trim()
+
+type BulkFile = { file: File; preview: string; state: 'waiting' | 'uploading' | 'done' | 'error'; url?: string }
+
+/** Envoi de plusieurs photos d'un coup, rangées dans le même projet (ou domaine). */
+function BulkUpload({ projects, defaultTag, onDone }: { projects: ProjectData[]; defaultTag: string; onDone: () => unknown }) {
+  const [files, setFiles] = useState<BulkFile[]>([])
+  const [title, setTitle] = useState('')
+  const [sub, setSub] = useState('')
+  const [tag, setTag] = useState(defaultTag)
+  const [running, setRunning] = useState(false)
+  const [notice, setNotice] = useState<{ ok: boolean; text: string } | null>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const pick = (list: FileList | null) => {
+    if (!list) return
+    setNotice(null)
+    const added = [...list].filter(f => f.type.startsWith('image/')).slice(0, 30)
+      .map(file => ({ file, preview: URL.createObjectURL(file), state: 'waiting' as const }))
+    setFiles(f => [...f, ...added].slice(0, 30))
+  }
+
+  const remove = (i: number) => setFiles(f => f.filter((_, k) => k !== i))
+
+  const send = async () => {
+    setRunning(true)
+    setNotice(null)
+    const results: BulkFile[] = [...files]
+    // une par une : l'envoi reste fiable même avec une connexion lente
+    for (let i = 0; i < results.length; i++) {
+      if (results[i].state === 'done') continue
+      results[i] = { ...results[i], state: 'uploading' }
+      setFiles([...results])
+      try {
+        const fd = new FormData()
+        fd.append('file', results[i].file)
+        fd.append('folder', 'gallery')
+        const res = await fetch('/api/upload', { method: 'POST', body: fd })
+        const data = await res.json()
+        if (!res.ok || !data.url) throw new Error(data.error)
+        results[i] = { ...results[i], state: 'done', url: data.url }
+      } catch {
+        results[i] = { ...results[i], state: 'error' }
+      }
+      setFiles([...results])
+    }
+
+    const ok = results.filter(r => r.state === 'done' && r.url)
+    const items = ok.map((r, k) => ({
+      label: title.trim() ? (ok.length > 1 ? `${title.trim()} (${k + 1})` : title.trim()) : titleFromFile(r.file.name),
+      sub: sub.trim(), tag, image_url: r.url!,
+    }))
+    const saved = items.length ? await addGalleryItems(items) : { error: undefined }
+    const failed = results.length - ok.length
+    if (saved.error) {
+      setNotice({ ok: false, text: saved.error })
+    } else {
+      setNotice({
+        ok: failed === 0,
+        text: `${ok.length} photo${ok.length > 1 ? 's' : ''} ajoutée${ok.length > 1 ? 's' : ''}.${failed ? ` ${failed} n'ont pas pu être envoyées (fichier trop lourd ?) : réessaie-les.` : ''}`,
+      })
+      setFiles(results.filter(r => r.state === 'error').map(r => ({ ...r, state: 'waiting' })))
+      await onDone()
+    }
+    setRunning(false)
+  }
+
+  return (
+    <Card title="Ajouter plusieurs photos d'un coup">
+      <div className="grid sm:grid-cols-3 gap-5">
+        <Field label="Projet ou domaine">
+          <select value={tag} onChange={e => setTag(e.target.value)} className={inputCls}>
+            <optgroup label="Projets">{projects.map(p => <option key={p.slug}>{p.title}</option>)}</optgroup>
+            <optgroup label="Domaines">{DOMAINS.map(d => <option key={d.slug} value={d.name}>{d.name} ({d.theme})</option>)}</optgroup>
+            <option>{GENERAL}</option>
+          </select>
+        </Field>
+        <Field label="Titre commun" hint="Numéroté automatiquement. Vide : le nom de chaque fichier.">
+          <input value={title} onChange={e => setTitle(e.target.value)} className={inputCls} placeholder="Ex. : Salon de Kolda" />
+        </Field>
+        <Field label="Légende commune">
+          <input value={sub} onChange={e => setSub(e.target.value)} className={inputCls} placeholder="Ex. : Mars 2026" />
+        </Field>
+      </div>
+
+      <div
+        onDragOver={e => e.preventDefault()}
+        onDrop={e => { e.preventDefault(); pick(e.dataTransfer.files) }}
+        className="mt-5 rounded-2xl border-2 border-dashed border-pearl bg-cream/50 p-5 text-center">
+        <button type="button" onClick={() => inputRef.current?.click()} disabled={running} className={btnGhost}>Choisir des photos</button>
+        <p className="text-muted text-xs mt-2">ou glisse-les ici · 30 photos au plus par envoi</p>
+        <input ref={inputRef} type="file" accept="image/*" multiple className="sr-only" tabIndex={-1}
+          onChange={e => { pick(e.target.files); e.target.value = '' }} />
+
+        {files.length > 0 && (
+          <ul className="mt-5 grid grid-cols-3 sm:grid-cols-6 gap-3 text-left">
+            {files.map((f, i) => (
+              <li key={f.preview} className="relative aspect-square rounded-xl overflow-hidden bg-white border border-pearl">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={f.preview} alt="" className={`w-full h-full object-cover ${f.state === 'uploading' ? 'opacity-50 animate-pulse' : ''}`} />
+                {f.state === 'done' && <span className="absolute inset-x-0 bottom-0 bg-ns/90 text-white text-[10px] font-bold text-center py-0.5">Envoyée</span>}
+                {f.state === 'error' && <span className="absolute inset-x-0 bottom-0 bg-red-700/90 text-white text-[10px] font-bold text-center py-0.5">Échec</span>}
+                {!running && (
+                  <button type="button" onClick={() => remove(i)} aria-label="Retirer cette photo"
+                    className="absolute top-1 right-1 w-6 h-6 rounded-full bg-white/90 text-ink text-xs font-bold">✕</button>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <div className="mt-5 flex flex-wrap items-center gap-3">
+        <button type="button" onClick={send} disabled={running || files.length === 0} className={btnPrimary}>
+          {running ? 'Envoi en cours…' : `Envoyer ${files.length || ''} photo${files.length > 1 ? 's' : ''}`.replace('  ', ' ')}
+        </button>
+        {notice && <p role="status" className={`text-sm ${notice.ok ? 'text-ns font-medium' : 'text-red-700'}`}>{notice.text}</p>}
+      </div>
+    </Card>
   )
 }

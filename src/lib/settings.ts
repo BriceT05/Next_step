@@ -79,7 +79,7 @@ export const DEFAULT_REGIONS: RegionsSettings = Object.fromEntries(
 );
 
 /** Ce que les composants côté navigateur reçoivent : les longs textes restent sur leurs pages. */
-export type ClientSettings = Omit<SiteSettings, "history" | "about">;
+export type ClientSettings = Omit<SiteSettings, "history" | "about" | "regions" | "legal">;
 
 export function toClientSettings(s: SiteSettings): ClientSettings {
   return {
