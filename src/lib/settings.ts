@@ -3,6 +3,7 @@ import {
   DEFAULT_REGION_PROJECTS, HISTORY, HISTORY_STEPS, MISSION, NEXT_EVENT, REGION_PROJECTS, REGIONS, SITE, SOCIALS, STATS, VALUES, VISION,
 } from "@/app/data/site";
 import { type DomainOverrides, applyDomainOverrides, clientDomainOverrides } from "@/lib/domains";
+import { DEFAULT_MENTIONS, DEFAULT_PRIVACY, type LegalPage } from "@/app/data/legal";
 
 /**
  * Réglages généraux modifiables depuis l'admin (table `site_settings`, une ligne par clé).
@@ -63,7 +64,12 @@ export type SiteSettings = GeneralSettings & {
   domains: DomainOverrides;
   /** Carte des 14 régions : actions réalisées et projets prévus, par nom de région */
   regions: RegionsSettings;
+  /** Pages Mentions légales et Politique de confidentialité */
+  legal: LegalSettings;
 };
+
+export type LegalSettings = { mentions: LegalPage; privacy: LegalPage };
+export const DEFAULT_LEGAL: LegalSettings = { mentions: DEFAULT_MENTIONS, privacy: DEFAULT_PRIVACY };
 
 export type RegionInfo = { done: string[]; projects: string[] };
 export type RegionsSettings = Record<string, RegionInfo>;
@@ -113,6 +119,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   about: DEFAULT_ABOUT,
   domains: {},
   regions: DEFAULT_REGIONS,
+  legal: DEFAULT_LEGAL,
 };
 
 /** « +221 77 860 51 82 » → « 221778605182 » (format attendu par wa.me et tel:) */
@@ -127,6 +134,7 @@ export function normalizeSettings(
   about: Partial<AboutSettings> | null = null,
   domains: DomainOverrides | null = null,
   regions: RegionsSettings | null = null,
+  legal: Partial<LegalSettings> | null = null,
 ): SiteSettings {
   const g = { ...DEFAULT_GENERAL, ...(general ?? {}) };
   return {
@@ -140,6 +148,10 @@ export function normalizeSettings(
     history: { ...DEFAULT_HISTORY, ...(history ?? {}) },
     about: { ...DEFAULT_ABOUT, ...(about ?? {}) },
     domains: domains ?? {},
+    legal: {
+      mentions: { ...DEFAULT_MENTIONS, ...(legal?.mentions ?? {}) },
+      privacy: { ...DEFAULT_PRIVACY, ...(legal?.privacy ?? {}) },
+    },
     regions: Object.fromEntries(REGIONS.map((r) => [r.name, { ...DEFAULT_REGIONS[r.name], ...(regions?.[r.name] ?? {}) }])),
   };
 }
@@ -150,7 +162,7 @@ export async function fetchSettings(client: SupabaseClient | null): Promise<Site
     const { data, error } = await client.from("site_settings").select("key, value");
     if (error || !data) return normalizeSettings(null, null);
     const get = (key: string) => data.find((r) => r.key === key)?.value ?? null;
-    const settings = normalizeSettings(get("general"), get("stats"), get("event"), get("history"), get("about"), get("domains"), get("regions"));
+    const settings = normalizeSettings(get("general"), get("stats"), get("event"), get("history"), get("about"), get("domains"), get("regions"), get("legal"));
     applyDomainOverrides(settings.domains);
     return settings;
   } catch {

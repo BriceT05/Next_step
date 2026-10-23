@@ -15,7 +15,7 @@ import {
   storeCredentials,
 } from '@/lib/admin-auth'
 import {
-  type AboutSettings, type EventSettings, type GeneralSettings, type HistorySettings, type RegionsSettings, type Stat,
+  type AboutSettings, type EventSettings, type GeneralSettings, type HistorySettings, type LegalSettings, type RegionsSettings, type Stat,
   SOCIAL_NETWORKS, phoneDigits,
 } from '@/lib/settings'
 
@@ -378,7 +378,7 @@ export async function moveProject(slug: string, step: -1 | 1) {
 }
 
 // ── Réglages généraux ─────────────────────────────────────
-async function saveSetting(key: 'general' | 'stats' | 'event' | 'history' | 'about' | 'domains' | 'regions', value: unknown) {
+async function saveSetting(key: 'general' | 'stats' | 'event' | 'history' | 'about' | 'domains' | 'regions' | 'legal', value: unknown) {
   const { error } = await adminClient().from('site_settings')
     .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' })
   if (error) return { error: error.message }
@@ -444,6 +444,14 @@ export async function saveDomain(slug: string, input: DomainText) {
     cover: clean(input.cover), presentation: (input.presentation ?? []).map(clean).filter(Boolean),
   }
   return saveSetting('domains', all)
+}
+
+export async function saveLegal(input: LegalSettings) {
+  await checkAuth()
+  const page = (p: { updated?: string; body?: string }) => ({ updated: clean(p?.updated), body: clean(p?.body) })
+  const legal = { mentions: page(input.mentions), privacy: page(input.privacy) }
+  if (!legal.mentions.body || !legal.privacy.body) return { error: 'Les deux pages doivent avoir un texte.' }
+  return saveSetting('legal', legal)
 }
 
 export async function saveRegions(input: RegionsSettings) {

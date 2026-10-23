@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { logout } from '@/app/admin/actions'
 
 const ICONS: Record<string, React.ReactNode> = {
+  legal: <path d="M12 3v18M5 7h14M7 7l-3 7a3 3 0 006 0L7 7zm10 0l-3 7a3 3 0 006 0l-3-7zM8 21h8" />,
   domains: <path d="M4 5h7v6H4V5zm9 0h7v6h-7V5zM4 13h7v6H4v-6zm9 0h7v6h-7v-6z" />,
   account: <path d="M7 11V8a5 5 0 0110 0v3M6 11h12a1 1 0 011 1v7a1 1 0 01-1 1H6a1 1 0 01-1-1v-7a1 1 0 011-1zm6 4v2" />,
   about: <path d="M12 6c-2-1.5-4.5-2-8-2v14c3.5 0 6 .5 8 2m0-14c2-1.5 4.5-2 8-2v14c-3.5 0-6 .5-8 2m0-14v14" />,
@@ -30,6 +31,7 @@ const NAV = [
   { href: '/admin/team', label: 'Équipe', icon: 'team' },
   { href: '/admin/partners', label: 'Partenaires', icon: 'partners' },
   { href: '/admin/settings', label: 'Infos & chiffres', icon: 'settings' },
+  { href: '/admin/legal', label: 'Pages légales', icon: 'legal' },
   { href: '/admin/account', label: 'Mon compte', icon: 'account' },
 ]
 
