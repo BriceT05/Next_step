@@ -31,6 +31,11 @@ create table if not exists public.news_articles (
   created_at      timestamptz not null default now()
 );
 
+-- Ajouts d'octobre 2026 : texte complet, brouillons et projet lié (choisi dans une liste).
+alter table public.news_articles add column if not exists body text not null default '';
+alter table public.news_articles add column if not exists published boolean not null default true;
+alter table public.news_articles add column if not exists project_slug text;
+
 -- ── Partenaires ─────────────────────────────────────────────
 create table if not exists public.partners (
   id          uuid primary key default gen_random_uuid(),
@@ -110,7 +115,8 @@ drop policy if exists "lecture publique" on public.gallery_items;
 create policy "lecture publique" on public.gallery_items for select to anon, authenticated using (true);
 
 drop policy if exists "lecture publique" on public.news_articles;
-create policy "lecture publique" on public.news_articles for select to anon, authenticated using (true);
+-- Les brouillons ne sont visibles que dans l'admin (lus côté serveur avec la clé service_role).
+create policy "lecture publique" on public.news_articles for select to anon, authenticated using (published);
 
 drop policy if exists "lecture publique" on public.partners;
 create policy "lecture publique" on public.partners for select to anon, authenticated using (true);

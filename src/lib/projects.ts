@@ -66,6 +66,18 @@ export const projectsOfDomain = (projects: ProjectData[], domainSlug: string) =>
 
 export const findProject = (projects: ProjectData[], slug: string) => projects.find((p) => p.slug === slug);
 
+/**
+ * Un article parle d'un projet s'il lui est lié dans l'admin ;
+ * les anciens articles, sans projet lié, comptent s'ils citent le nom du projet.
+ */
+export function articleIsAbout(
+  article: { title: string; excerpt: string; project_slug?: string | null },
+  project: Pick<ProjectData, "slug" | "title">,
+) {
+  if (article.project_slug) return article.project_slug === project.slug;
+  return `${article.title} ${article.excerpt}`.toLowerCase().includes(project.title.toLowerCase());
+}
+
 /** « Forum d'Entrepreneuriat » → « forum-d-entrepreneuriat » */
 export function slugify(text: string) {
   return text

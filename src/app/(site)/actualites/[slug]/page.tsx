@@ -1,7 +1,9 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getNews } from "@/lib/content";
+import { getNews, getProjects } from "@/lib/content";
+import { findProject } from "@/lib/projects";
+import RichText from "../../../components/RichText";
 import { ShareButtons } from "../../../components/MediaGallery";
 import { Breadcrumb, SmartImage } from "../../../components/ui";
 
@@ -29,8 +31,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const { article, others } = await getArticle(slug);
+  const [{ article, others }, projects] = await Promise.all([getArticle(slug), getProjects()]);
   if (!article) notFound();
+  const project = article.project_slug ? findProject(projects, article.project_slug) : undefined;
 
   return (
     <>
@@ -53,11 +56,26 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             <SmartImage src={article.image_url} alt="" sizes="(max-width: 768px) 100vw, 768px" priority />
           </div>
         )}
-        <div className="space-y-5 text-lg text-ink leading-relaxed">
-          {article.excerpt.split(/\n{2,}/).map((p, i) => (
-            <p key={i}>{p}</p>
-          ))}
-        </div>
+        {article.body ? (
+          <>
+            {article.excerpt && <p className="text-xl text-ink font-semibold leading-relaxed mb-6">{article.excerpt}</p>}
+            <RichText text={article.body} className="text-lg text-ink leading-relaxed" />
+          </>
+        ) : (
+          <RichText text={article.excerpt} className="text-lg text-ink leading-relaxed" />
+        )}
+        {project && (
+          <Link
+            href={`/projets/${project.slug}`}
+            className="mt-8 flex items-center justify-between gap-4 rounded-2xl bg-cream border border-pearl p-5 hover:border-ns"
+          >
+            <span>
+              <span className="block text-sm text-muted">Projet lié</span>
+              <span className="block font-display font-bold text-ink">{project.title}</span>
+            </span>
+            <span className="font-bold text-ns">Voir le projet →</span>
+          </Link>
+        )}
         <div className="mt-10 pt-6 border-t border-pearl">
           <p className="font-semibold text-ink mb-3">Partager cet article</p>
           <ShareButtons title={article.title} />

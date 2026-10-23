@@ -6,7 +6,8 @@ import { STATUS_LABEL } from '@/app/data/projects'
 import { supabase } from '@/lib/supabase'
 import type { GalleryItem, NewsArticle } from '@/lib/supabase'
 import { toMedia } from '@/lib/content'
-import { deleteProject, moveProject } from '@/app/admin/actions'
+import { deleteProject, getAllNews, moveProject } from '@/app/admin/actions'
+import { articleIsAbout } from '@/lib/projects'
 import { useAdminProjects } from '@/app/admin/useAdminProjects'
 import { Badge, DeleteButton, Loading, PageHeader, btnPrimary } from '@/app/admin/ui'
 
@@ -15,20 +16,20 @@ const STATUS_COLOR = { 'a-venir': '#1F6FB2', 'en-cours': '#3C8D4F', termine: '#5
 export default function ProjectsAdmin() {
   const { projects, saved, reload } = useAdminProjects()
   const [gallery, setGallery] = useState<GalleryItem[] | null>(null)
-  const [news, setNews] = useState<Pick<NewsArticle, 'title' | 'excerpt'>[] | null>(null)
+  const [news, setNews] = useState<Pick<NewsArticle, 'title' | 'excerpt' | 'project_slug'>[] | null>(null)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState('')
 
   useEffect(() => {
     supabase.from('gallery_items').select('*').then(({ data }) => setGallery((data ?? []) as GalleryItem[]))
-    supabase.from('news_articles').select('title, excerpt').then(({ data }) => setNews(data ?? []))
+    getAllNews().then(setNews)
   }, [])
 
   const mediaCount = (slug: string) =>
     gallery === null || projects === null ? '…' : gallery.map(g => toMedia(g, projects)).filter(m => m.projectSlug === slug).length
 
-  const newsCount = (title: string) =>
-    news === null ? '…' : news.filter(a => `${a.title} ${a.excerpt}`.toLowerCase().includes(title.toLowerCase())).length
+  const newsCount = (p: { slug: string; title: string }) =>
+    news === null ? '…' : news.filter(a => articleIsAbout(a, p)).length
 
   const run = (task: () => Promise<{ error?: string }>) => {
     setError('')
@@ -87,7 +88,7 @@ export default function ProjectsAdmin() {
                     </div>
                     <div className="rounded-xl bg-cream px-3 py-2">
                       <dt className="text-muted text-[11px]">Articles liés</dt>
-                      <dd className="font-display font-bold text-ns text-lg tabular-nums">{newsCount(p.title)}</dd>
+                      <dd className="font-display font-bold text-ns text-lg tabular-nums">{newsCount(p)}</dd>
                     </div>
                   </dl>
 

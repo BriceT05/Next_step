@@ -4,7 +4,7 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@supabase/supabase-js'
-import type { Submission } from '@/lib/supabase'
+import type { NewsArticle, Submission } from '@/lib/supabase'
 import { PARTNER_TYPES, PARTNERS, type PartnerType, TEAM } from '@/app/data/site'
 import { DOMAINS } from '@/app/data/domains'
 import { PROJECTS, STATUS_LABEL, type ProjectData } from '@/app/data/projects'
@@ -72,22 +72,31 @@ export async function deleteGalleryItem(id: string) {
 }
 
 // ── News ──────────────────────────────────────────────────
-export async function addNewsArticle(data: {
-  category: string; category_color: string; title: string; excerpt: string
+export type NewsInput = {
+  category: string; category_color: string; title: string; excerpt: string; body: string
   date: string; author: string; read_time: string; image_url: string
-}) {
-  await checkAuth()
-  await adminClient().from('news_articles').insert(data)
-  refreshSite()
+  published: boolean; project_slug: string | null
 }
 
-export async function updateNewsArticle(id: string, data: {
-  category: string; category_color: string; title: string; excerpt: string
-  date: string; author: string; read_time: string; image_url: string
-}) {
+/** Tous les articles, brouillons compris : la clé publique ne voit que les articles publiés. */
+export async function getAllNews(): Promise<NewsArticle[]> {
   await checkAuth()
-  await adminClient().from('news_articles').update(data).eq('id', id)
+  const { data } = await adminClient().from('news_articles').select('*').order('created_at', { ascending: false })
+  return (data ?? []) as NewsArticle[]
+}
+
+export async function addNewsArticle(data: NewsInput) {
+  await checkAuth()
+  const { error } = await adminClient().from('news_articles').insert(data)
   refreshSite()
+  return { error: error?.message }
+}
+
+export async function updateNewsArticle(id: string, data: NewsInput) {
+  await checkAuth()
+  const { error } = await adminClient().from('news_articles').update(data).eq('id', id)
+  refreshSite()
+  return { error: error?.message }
 }
 
 export async function deleteNewsArticle(id: string) {
@@ -284,6 +293,10 @@ export async function saveProject(originalSlug: string | null, input: ProjectDat
     const oldTitle = (before?.data as Partial<ProjectData> | undefined)?.title
     if (oldTitle && oldTitle !== project.title) {
       await db.from('gallery_items').update({ tag: project.title }).eq('tag', oldTitle)
+    }
+    // Les articles liés suivent le projet si son adresse change.
+    if (project.slug !== originalSlug) {
+      await db.from('news_articles').update({ project_slug: project.slug }).eq('project_slug', originalSlug)
     }
   } else {
     const { data: last } = await db.from('projects').select('sort_order').order('sort_order', { ascending: false }).limit(1).maybeSingle()

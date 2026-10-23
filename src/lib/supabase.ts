@@ -11,6 +11,12 @@ export type GalleryItem = {
 export type NewsArticle = {
   id: string; category: string; category_color: string; title: string; excerpt: string
   date: string; author: string; read_time: string; image_url: string; created_at: string
+  /** Texte complet de l'article ; vide pour les anciens articles (le résumé sert alors de texte) */
+  body?: string
+  /** false = brouillon, invisible sur le site */
+  published?: boolean
+  /** Projet lié : l'article s'affiche sur sa page */
+  project_slug?: string | null
 }
 export type Partner = {
   id: string; name: string; full_name: string; logo_url: string; website?: string; created_at: string

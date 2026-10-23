@@ -3,7 +3,7 @@ import type { NewsArticle } from "@/lib/supabase";
 import type { Media } from "@/lib/content";
 import { type Domain, DOMAINS, domainTheme, getDomainBySlug } from "@/app/data/domains";
 import type { ProjectData } from "@/app/data/projects";
-import { projectsOfDomain } from "@/lib/projects";
+import { articleIsAbout, projectsOfDomain } from "@/lib/projects";
 import type { Member } from "@/app/data/site";
 import { DomainTeams } from "./about-widgets";
 import { Reveal } from "./home-widgets";
@@ -227,7 +227,7 @@ export function ProjectView({
   const domain = getDomainBySlug(project.domainSlug)!;
   const projectMedia = media.filter((m) => m.projectSlug === project.slug);
   const similar = projectsOfDomain(projects, domain.slug).filter((p) => p.slug !== project.slug);
-  const related = news.filter((a) => `${a.title} ${a.excerpt}`.toLowerCase().includes(project.title.toLowerCase())).slice(0, 3);
+  const related = news.filter((a) => articleIsAbout(a, project)).slice(0, 3);
   const question = `Bonjour Next Step.sn ! J'ai une question sur le projet « ${project.title} ».`;
 
   return (
