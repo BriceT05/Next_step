@@ -10,6 +10,10 @@ import { DOMAINS } from '@/app/data/domains'
 import { PROJECTS, STATUS_LABEL, type ProjectData } from '@/app/data/projects'
 import { projectToRow } from '@/lib/projects'
 import {
+  MIN_PASSWORD_LENGTH, SESSION_COOKIE, checkCredentials, currentAdminEmail, getStoredCredentials, isValidSession, sessionValue,
+  storeCredentials,
+} from '@/lib/admin-auth'
+import {
   type AboutSettings, type EventSettings, type GeneralSettings, type HistorySettings, type Stat, SOCIAL_NETWORKS, phoneDigits,
 } from '@/lib/settings'
 
@@ -23,33 +27,65 @@ function adminClient() {
 
 async function checkAuth() {
   const cookieStore = await cookies()
-  const token = cookieStore.get('admin_auth')?.value
-  if (token !== process.env.ADMIN_TOKEN) redirect('/admin/login')
+  if (!(await isValidSession(cookieStore.get(SESSION_COOKIE)?.value))) redirect('/admin/login')
 }
 
-export async function login(formData: FormData) {
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
-
-  if (email !== process.env.ADMIN_EMAIL || password !== process.env.ADMIN_PASSWORD) {
-    return { error: 'Email ou mot de passe incorrect' }
-  }
-
+async function setSessionCookie(version: number) {
   const cookieStore = await cookies()
-  cookieStore.set('admin_auth', process.env.ADMIN_TOKEN!, {
+  cookieStore.set(SESSION_COOKIE, sessionValue(version), {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     maxAge: 60 * 60 * 24 * 7,
     path: '/',
   })
+}
+
+export async function login(formData: FormData) {
+  const email = String(formData.get('email') ?? '')
+  const password = String(formData.get('password') ?? '')
+
+  const version = await checkCredentials(email, password)
+  if (version === null) return { error: 'E-mail ou mot de passe incorrect' }
+
+  await setSessionCookie(version)
   redirect('/admin/dashboard')
 }
 
 export async function logout() {
   const cookieStore = await cookies()
-  cookieStore.delete('admin_auth')
+  cookieStore.delete(SESSION_COOKIE)
   redirect('/admin/login')
+}
+
+// ── Compte admin ──────────────────────────────────────────
+export async function getAccount() {
+  await checkAuth()
+  const stored = await getStoredCredentials()
+  return { email: stored?.email ?? process.env.ADMIN_EMAIL ?? '', fromEnv: !stored }
+}
+
+/** Change l'e-mail de connexion et/ou le mot de passe ; déconnecte les autres appareils. */
+export async function changeCredentials(input: { currentPassword: string; email: string; newPassword: string }) {
+  await checkAuth()
+  const currentEmail = await currentAdminEmail()
+  if ((await checkCredentials(currentEmail, input.currentPassword)) === null) {
+    return { error: 'Le mot de passe actuel est incorrect.' }
+  }
+  const email = input.email.trim().toLowerCase()
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: "L'adresse e-mail n'est pas valide." }
+  // sans nouveau mot de passe, on garde l'actuel (changement d'e-mail seul)
+  const password = input.newPassword || input.currentPassword
+  if (input.newPassword) {
+    if (input.newPassword.length < MIN_PASSWORD_LENGTH) {
+      return { error: `Le nouveau mot de passe doit faire au moins ${MIN_PASSWORD_LENGTH} caractères.` }
+    }
+    if (input.newPassword === input.currentPassword) return { error: "Le nouveau mot de passe doit être différent de l'actuel." }
+  }
+  const { version, error } = await storeCredentials(email, password)
+  if (error || version === undefined) return { error: error ?? 'Enregistrement impossible.' }
+  await setSessionCookie(version)
+  return {}
 }
 
 // ── Gallery ───────────────────────────────────────────────

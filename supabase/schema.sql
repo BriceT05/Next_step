@@ -87,6 +87,19 @@ create table if not exists public.site_settings (
   updated_at  timestamptz not null default now()
 );
 
+-- ── Identifiants de l'admin ─────────────────────────────────
+-- Une seule ligne (id = 1), créée au premier changement de mot de passe depuis l'admin.
+-- Mot de passe haché (scrypt). RLS activé SANS politique : seule la clé service_role (serveur) y accède.
+-- Tant que la table est vide, la connexion utilise ADMIN_EMAIL / ADMIN_PASSWORD de .env.local.
+create table if not exists public.admin_credentials (
+  id               integer primary key check (id = 1),
+  email            text not null,
+  password_hash    text not null,
+  session_version  integer not null default 1,
+  updated_at       timestamptz not null default now()
+);
+alter table public.admin_credentials enable row level security;
+
 -- ── Demandes envoyées par les formulaires du site ───────────
 create table if not exists public.submissions (
   id          uuid primary key default gen_random_uuid(),

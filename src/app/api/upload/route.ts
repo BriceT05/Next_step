@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { SESSION_COOKIE, isValidSession } from '@/lib/admin-auth'
 
 export async function POST(request: NextRequest) {
-  const token = request.cookies.get('admin_auth')?.value
-  if (!token || token !== process.env.ADMIN_TOKEN) {
+  if (!(await isValidSession(request.cookies.get(SESSION_COOKIE)?.value))) {
     return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
   }
 
