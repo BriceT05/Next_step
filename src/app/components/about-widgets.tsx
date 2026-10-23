@@ -94,11 +94,11 @@ function MemberCard({ member, lead }: { member: Member; lead: boolean }) {
   const ring = lead ? "ring-4 ring-gold" : "ring-4 ring-dc";
 
   const front = (
-    <div className="flip-face flex flex-col items-center text-center px-2">
+    <div className="flip-face flex flex-col items-center text-center px-1 sm:px-2">
       <div className={`relative ${size} rounded-full ${ring} ring-offset-4 ring-offset-cream overflow-hidden bg-dc text-white flex items-center justify-center font-display font-bold ${lead ? "text-3xl" : "text-xl"}`}>
         {member.photo ? <SmartImage src={member.photo} alt={member.name} sizes="128px" /> : <span aria-hidden>{initials(member)}</span>}
       </div>
-      <p className={`font-display font-bold text-ink mt-4 leading-tight ${lead ? "text-lg" : "text-base"}`}>{member.name}</p>
+      <p className={`font-display font-bold text-ink mt-4 leading-tight break-words ${lead ? "text-lg" : "text-[15px] sm:text-base"}`}>{member.name}</p>
       {member.post && <p className="text-muted text-sm leading-snug">{member.post}</p>}
       {domain && (
         <span className="mt-2 inline-block bg-dc-light text-dc-deep text-[11px] font-bold px-2.5 py-0.5 rounded-full">{domain.name}</span>
@@ -106,7 +106,9 @@ function MemberCard({ member, lead }: { member: Member; lead: boolean }) {
     </div>
   );
 
-  if (!hasBack) return <div className={lead ? "w-44" : "w-36"}>{front}</div>;
+  // sur mobile, deux adjoints doivent tenir côte à côte, même dans le cadre coloré d'un domaine
+  const width = lead ? "w-40 sm:w-44" : "w-32 sm:w-36";
+  if (!hasBack) return <div className={width}>{front}</div>;
 
   return (
     <button
@@ -116,7 +118,7 @@ function MemberCard({ member, lead }: { member: Member; lead: boolean }) {
       onMouseLeave={() => setFlipped(false)}
       aria-pressed={flipped}
       aria-label={`${member.name}, ${member.post} : voir la biographie`}
-      className={`flip ${flipped ? "is-flipped" : ""} ${lead ? "w-44" : "w-36"}`}
+      className={`flip ${flipped ? "is-flipped" : ""} ${width}`}
     >
       <div className="flip-inner">
         {front}
@@ -163,7 +165,7 @@ function PostTree({ lead, deputies }: { lead: Member; deputies: Member[] }) {
           {/* sur mobile, les traits deviennent une ligne verticale */}
           <span className="sm:hidden block w-0.5 h-8 bg-gold" aria-hidden />
 
-          <ul className="flex gap-4 sm:gap-6 max-w-full overflow-x-auto no-scrollbar px-2 pb-2 sm:justify-center">
+          <ul className="flex flex-wrap justify-center gap-x-2 gap-y-6 sm:gap-x-6 max-w-full">
             {deputies.map((d, i) => (
               <motion.li
                 key={d.id}
@@ -203,7 +205,7 @@ function MemberGrid({ members }: { members: Member[] }) {
   return (
     <div className="mt-14">
       <p className="text-center font-display font-bold text-lg text-ink mb-6">Les membres</p>
-      <ul className="flex flex-wrap justify-center gap-x-4 gap-y-8 sm:gap-x-6">
+      <ul className="flex flex-wrap justify-center gap-x-2 gap-y-8 sm:gap-x-6">
         {members.map((m) => (
           <li key={m.id}>
             <MemberCard member={m} lead={false} />
@@ -242,7 +244,7 @@ export function DomainTeams({ team, slug }: { team: Member[]; slug?: string }) {
           ) : null;
         }
         return (
-          <section key={d.slug} style={domainTheme(d)} className={slug ? "" : "rounded-3xl bg-dc-light border-t-8 border-dc p-6 sm:p-8"}>
+          <section key={d.slug} style={domainTheme(d)} className={slug ? "" : "min-w-0 rounded-3xl bg-dc-light border-t-8 border-dc px-3 py-6 sm:p-8"}>
             {!slug && (
               <h3 className="font-display font-bold text-2xl text-dc-deep text-center mb-8">
                 {d.name} <span className="font-sans font-medium text-base">· {d.theme}</span>
@@ -275,7 +277,7 @@ export function RegionMap({ regions }: { regions: RegionsSettings }) {
     <div className="grid lg:grid-cols-[1.3fr_1fr] gap-8 items-start">
       <div>
         <div
-          className="grid grid-cols-5 gap-2 sm:gap-3"
+          className="flex flex-wrap gap-2 sm:grid sm:grid-cols-5 sm:gap-3"
           role="group"
           aria-label="Les 14 régions du Sénégal (carte schématique)"
         >
@@ -287,7 +289,7 @@ export function RegionMap({ regions }: { regions: RegionsSettings }) {
                 onClick={() => setActive(r.name)}
                 aria-pressed={on}
                 style={{ gridColumn: r.col, gridRow: r.row }}
-                className={`aspect-[4/3] rounded-2xl text-[11px] sm:text-sm font-bold leading-tight px-1 transition-all ${
+                className={`rounded-full sm:rounded-2xl sm:aspect-[4/3] text-sm font-bold leading-tight px-3.5 py-2 sm:px-1 sm:py-0 transition-all ${
                   on
                     ? "bg-gold text-ink scale-105 shadow-lg"
                     : regions[r.name]?.done.length
@@ -300,7 +302,7 @@ export function RegionMap({ regions }: { regions: RegionsSettings }) {
             );
           })}
         </div>
-        <p className="text-xs text-muted mt-3">Carte schématique : la position des régions est approximative.</p>
+        <p className="hidden sm:block text-xs text-muted mt-3">Carte schématique : la position des régions est approximative.</p>
       </div>
 
       <div className="bg-white rounded-3xl border border-pearl p-6 shadow-sm" aria-live="polite">

@@ -65,11 +65,11 @@ export function MissionView({ settings }: { settings: SiteSettings }) {
         <div className={`${wrap} py-14 sm:py-20 grid md:grid-cols-2 gap-6`}>
           <div className="bg-white rounded-3xl border border-pearl p-7 sm:p-10 border-t-8 border-t-ns">
             <p className="text-gold-ink font-bold text-sm uppercase tracking-widest mb-3">Notre mission</p>
-            <p className="font-display font-bold text-2xl text-ns leading-snug">{MISSION}</p>
+            <p className="font-display font-bold text-xl sm:text-2xl text-ns leading-snug">{MISSION}</p>
           </div>
           <div className="bg-ns text-white rounded-3xl p-7 sm:p-10">
             <p className="text-gold font-bold text-sm uppercase tracking-widest mb-3">Notre vision</p>
-            <p className="font-display font-bold text-2xl leading-snug">{VISION}</p>
+            <p className="font-display font-bold text-xl sm:text-2xl leading-snug">{VISION}</p>
           </div>
         </div>
       </section>

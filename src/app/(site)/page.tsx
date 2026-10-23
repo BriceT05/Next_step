@@ -52,7 +52,7 @@ export default async function Home() {
         <Image src="/members.jpg" alt="Des jeunes de Next Step.sn sur le terrain" fill priority sizes="100vw" className="object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t sm:bg-gradient-to-r from-ns-dark via-ns-dark/75 to-ns-dark/20" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-28 pb-14 sm:pb-20">
-          <p className="inline-block bg-white/15 backdrop-blur text-sm font-semibold px-4 py-1.5 rounded-full mb-4">
+          <p className="inline-block bg-white/15 backdrop-blur text-xs sm:text-sm font-semibold px-3 sm:px-4 py-1.5 rounded-full mb-4">
             Association sénégalaise de jeunesse · 14 régions
           </p>
           <h1 className="font-hand text-gold text-7xl sm:text-8xl lg:text-9xl leading-[0.9]">Ose rêver</h1>
@@ -133,13 +133,17 @@ export default async function Home() {
       <section className="bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
           <SectionTitle kicker="Projets à la une" title="Ce que nous préparons" text="Les projets en cours et à venir, avec leur statut et leur période." />
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* sur mobile : un carrousel à faire glisser, plutôt qu'une longue colonne de cartes */}
+          <div className="-mx-4 px-4 flex gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-2 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-6 sm:overflow-visible">
             {featured.map((p, i) => (
-              <Reveal key={p.slug} delay={(i % 3) * 0.08}>
+              <Reveal key={p.slug} delay={(i % 3) * 0.08} className="w-[82%] shrink-0 snap-start sm:w-auto">
                 <ProjectCard project={p} />
               </Reveal>
             ))}
           </div>
+          {featured.length > 1 && (
+            <p className="sm:hidden text-center text-muted text-sm mt-3">Fais glisser pour voir les {featured.length} projets →</p>
+          )}
         </div>
       </section>
 

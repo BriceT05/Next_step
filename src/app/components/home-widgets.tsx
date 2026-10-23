@@ -39,11 +39,20 @@ export function Compass() {
   const persona = PERSONAS.find((p) => p.id === selected);
   const domain = persona?.domainSlug ? getDomainBySlug(persona.domainSlug) : undefined;
   const angle = persona?.angle ?? -30;
+  const resultRef = useRef<HTMLDivElement>(null);
+
+  const choose = (id: string) => {
+    setSelected(id);
+    // sur mobile, la réponse s'affiche sous la boussole : on l'amène à l'écran
+    if (window.matchMedia("(max-width: 1023px)").matches) {
+      setTimeout(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 80);
+    }
+  };
 
   return (
     <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] gap-8 lg:gap-14 items-center">
       <div className="order-2 lg:order-1 flex flex-col items-center">
-        <svg viewBox="0 0 200 200" className="w-64 h-64 sm:w-80 sm:h-80 drop-shadow-xl" role="img" aria-label="Boussole Next Step">
+        <svg viewBox="0 0 200 200" className="w-52 h-52 sm:w-80 sm:h-80 drop-shadow-xl" role="img" aria-label="Boussole Next Step">
           <circle cx="100" cy="100" r="98" fill="#014D40" />
           <circle cx="100" cy="100" r="90" fill="none" stroke="#C49A00" strokeWidth="2" />
           <circle cx="100" cy="100" r="70" fill="none" stroke="#ffffff" strokeOpacity=".18" strokeWidth="1" />
@@ -78,7 +87,7 @@ export function Compass() {
           <circle cx="100" cy="100" r="7" fill="#014D40" stroke="#C49A00" strokeWidth="2.5" />
         </svg>
 
-        <div className="mt-6 w-full max-w-md min-h-[11rem]" aria-live="polite">
+        <div ref={resultRef} className="mt-6 w-full max-w-md lg:min-h-[11rem] scroll-mt-24" aria-live="polite">
           {persona ? (
             <motion.div
               key={persona.id}
@@ -101,24 +110,24 @@ export function Compass() {
               </Link>
             </motion.div>
           ) : (
-            <p className="text-center text-muted pt-6">Choisis ton profil : l&apos;aiguille te montre ton prochain pas.</p>
+            <p className="text-center text-muted lg:pt-6">Choisis ton profil : l&apos;aiguille te montre ton prochain pas.</p>
           )}
         </div>
       </div>
 
       <div className="order-1 lg:order-2">
         <p className="font-display font-bold text-ink text-lg mb-4">Qui es-tu ?</p>
-        <div className="grid sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-2 sm:gap-3">
           {PERSONAS.map((p) => {
             const d = p.domainSlug ? getDomainBySlug(p.domainSlug) : undefined;
             const active = p.id === selected;
             return (
               <button
                 key={p.id}
-                onClick={() => setSelected(p.id)}
+                onClick={() => choose(p.id)}
                 aria-pressed={active}
                 style={d ? domainTheme(d) : undefined}
-                className={`flex items-center gap-3 text-left px-4 py-4 rounded-2xl border-2 font-semibold transition-colors ${
+                className={`flex items-center gap-2 sm:gap-3 text-left px-3 py-3 sm:px-4 sm:py-4 rounded-2xl border-2 text-sm sm:text-base font-semibold leading-snug transition-colors ${
                   active ? "bg-dc border-dc text-white" : "bg-white border-pearl text-ink hover:border-dc"
                 }`}
               >
@@ -172,7 +181,7 @@ export function StatsCounters() {
   return (
     <dl className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-4 gap-y-8">
       {stats.map((s, i) => (
-        <div key={i} className="text-center flex flex-col-reverse">
+        <div key={i} className="text-center flex flex-col-reverse justify-end">
           <dt className="text-white/90 text-sm mt-1 leading-snug">{s.label}</dt>
           <dd className="font-display font-extrabold text-4xl sm:text-5xl text-gold">
             <Counter value={s.value} suffix={s.suffix} />
