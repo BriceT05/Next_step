@@ -186,3 +186,49 @@ export function FileUpload({ folder, accept = 'image/*', kind = 'image', onUploa
     </div>
   )
 }
+
+/** Liste d'éléments modifiable : ajouter, supprimer, monter, descendre. */
+export function ListEditor<T>({ items, onChange, newItem, addLabel, render }: {
+  items: T[]
+  onChange: (items: T[]) => void
+  newItem: T
+  addLabel: string
+  render: (item: T, update: (patch: T extends object ? Partial<T> : T) => void) => React.ReactNode
+}) {
+  const update = (i: number, patch: unknown) =>
+    onChange(items.map((it, k) => (k !== i ? it : typeof it === 'object' && it !== null ? { ...it, ...(patch as object) } : (patch as T))))
+  const move = (i: number, step: number) => {
+    const next = [...items]
+    ;[next[i], next[i + step]] = [next[i + step], next[i]]
+    onChange(next)
+  }
+
+  return (
+    <div className="space-y-3">
+      {items.map((item, i) => (
+        <div key={i} className="flex gap-3 items-start rounded-xl bg-cream/60 border border-pearl p-3">
+          <div className="flex-1 min-w-0">{render(item, patch => update(i, patch))}</div>
+          <div className="flex flex-col gap-1 shrink-0">
+            <SmallButton label="Monter" disabled={i === 0} onClick={() => move(i, -1)}>↑</SmallButton>
+            <SmallButton label="Descendre" disabled={i === items.length - 1} onClick={() => move(i, 1)}>↓</SmallButton>
+            <SmallButton label="Retirer" danger onClick={() => onChange(items.filter((_, k) => k !== i))}>✕</SmallButton>
+          </div>
+        </div>
+      ))}
+      <button type="button" onClick={() => onChange([...items, newItem])} className={btnGhost}>+ {addLabel}</button>
+    </div>
+  )
+}
+
+function SmallButton({ label, onClick, disabled, danger, children }: {
+  label: string; onClick: () => void; disabled?: boolean; danger?: boolean; children: React.ReactNode
+}) {
+  return (
+    <button type="button" onClick={onClick} disabled={disabled} aria-label={label} title={label}
+      className={`w-8 h-8 rounded-lg border bg-white text-sm font-bold flex items-center justify-center transition disabled:opacity-30 disabled:cursor-not-allowed ${
+        danger ? 'border-red-200 text-red-700 hover:bg-red-50' : 'border-pearl text-ink hover:border-ns hover:text-ns'
+      }`}>
+      {children}
+    </button>
+  )
+}

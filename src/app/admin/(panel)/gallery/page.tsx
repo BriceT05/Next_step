@@ -2,21 +2,23 @@
 import { use, useEffect, useMemo, useRef, useState, useTransition } from 'react'
 import Image from 'next/image'
 import { DOMAINS } from '@/app/data/domains'
-import { PROJECTS } from '@/app/data/projects'
+import { PROJECTS, type ProjectData } from '@/app/data/projects'
 import { supabase } from '@/lib/supabase'
 import type { GalleryItem } from '@/lib/supabase'
 import { addGalleryItem, deleteGalleryItem, updateGalleryItem } from '@/app/admin/actions'
+import { useAdminProjects } from '@/app/admin/useAdminProjects'
 import {
   Badge, Card, DeleteButton, EditButton, EditingNotice, Empty, Field, FileUpload, Loading, PageHeader, btnGhost, btnPrimary, inputCls,
 } from '@/app/admin/ui'
 
 // Le tag range le média dans la galerie du projet (ou du domaine) du même nom : voir src/lib/content.ts
 const GENERAL = 'Général'
-const EMPTY = { label: '', sub: '', tag: PROJECTS[0].title, image_url: '', video_url: '' }
+// tag vide = le premier projet de la liste
+const EMPTY = { label: '', sub: '', tag: '', image_url: '', video_url: '' }
 
 /** Couleur du domaine auquel le tag rattache le média. */
-function tagColor(tag: string) {
-  const project = PROJECTS.find(p => p.title === tag)
+function tagColor(tag: string, projects: ProjectData[]) {
+  const project = projects.find(p => p.title === tag)
   const domain = DOMAINS.find(d => d.slug === project?.domainSlug || d.name === tag)
   return domain?.color ?? '#55636A'
 }
@@ -38,6 +40,11 @@ export default function GalleryAdmin({ searchParams }: { searchParams: Promise<{
       .then(({ data }) => setItems(data ?? []))
 
   useEffect(() => { fetchItems() }, [])
+
+  // Projets enregistrés dans l'admin (les six projets par défaut tant qu'aucun n'a été modifié)
+  const { projects: dbProjects } = useAdminProjects()
+  const projects = dbProjects ?? PROJECTS
+  const tag = form.tag || projects[0]?.title || GENERAL
 
   const switchType = (t: 'image' | 'video') => {
     setMediaType(t)
@@ -67,7 +74,7 @@ export default function GalleryAdmin({ searchParams }: { searchParams: Promise<{
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!ready) return
-    const data = { label: form.label.trim(), sub: form.sub.trim(), tag: form.tag, image_url: form.image_url }
+    const data = { label: form.label.trim(), sub: form.sub.trim(), tag, image_url: form.image_url }
     startTransition(async () => {
       if (editing) {
         // une chaîne vide efface la vidéo si le média repasse en photo
@@ -89,8 +96,8 @@ export default function GalleryAdmin({ searchParams }: { searchParams: Promise<{
   }
 
   // un ancien tag absent des listes reste sélectionnable pendant la modification
-  const knownTags = [...PROJECTS.map(p => p.title), ...DOMAINS.map(d => d.name), GENERAL]
-  const legacyTag = form.tag && !knownTags.includes(form.tag) ? form.tag : null
+  const knownTags = [...projects.map(p => p.title), ...DOMAINS.map(d => d.name), GENERAL]
+  const legacyTag = !knownTags.includes(tag) ? tag : null
 
   const usedTags = useMemo(() => [...new Set((items ?? []).map(i => i.tag))], [items])
   const visible = (items ?? []).filter(i => filter === 'all' || i.tag === filter)
@@ -123,9 +130,9 @@ export default function GalleryAdmin({ searchParams }: { searchParams: Promise<{
                 className={inputCls} placeholder="Ex. : Mars 2026, 400 élèves" />
             </Field>
             <Field label="Projet ou domaine" full hint="Le média apparaîtra dans la galerie de ce projet (ou de ce domaine).">
-              <select value={form.tag} onChange={e => setForm(f => ({ ...f, tag: e.target.value }))} className={inputCls}>
+              <select value={tag} onChange={e => setForm(f => ({ ...f, tag: e.target.value }))} className={inputCls}>
                 <optgroup label="Projets">
-                  {PROJECTS.map(p => <option key={p.slug}>{p.title}</option>)}
+                  {projects.map(p => <option key={p.slug}>{p.title}</option>)}
                 </optgroup>
                 <optgroup label="Domaines">
                   {DOMAINS.map(d => <option key={d.slug} value={d.name}>{d.name} ({d.theme})</option>)}
@@ -196,7 +203,7 @@ export default function GalleryAdmin({ searchParams }: { searchParams: Promise<{
                   <p className="text-ink text-sm font-semibold line-clamp-2">{item.label}</p>
                   {item.sub && <p className="text-muted text-xs mt-0.5 line-clamp-1">{item.sub}</p>}
                 </div>
-                <div><Badge color={tagColor(item.tag)}><span className="line-clamp-1">{item.tag}</span></Badge></div>
+                <div><Badge color={tagColor(item.tag, projects)}><span className="line-clamp-1">{item.tag}</span></Badge></div>
                 <div className="mt-auto flex flex-wrap gap-2 pt-1">
                   <EditButton disabled={isPending} onClick={() => startEdit(item)} />
                   <DeleteButton label={item.label} disabled={isPending} onConfirm={() => handleDelete(item.id)} />

@@ -2,7 +2,8 @@ import Link from "next/link";
 import type { NewsArticle } from "@/lib/supabase";
 import type { Media } from "@/lib/content";
 import { type Domain, DOMAINS, domainTheme, getDomainBySlug } from "@/app/data/domains";
-import { type ProjectData, getProjectsByDomain } from "@/app/data/projects";
+import type { ProjectData } from "@/app/data/projects";
+import { projectsOfDomain } from "@/lib/projects";
 import type { Member } from "@/app/data/site";
 import { DomainTeams } from "./about-widgets";
 import { Reveal } from "./home-widgets";
@@ -32,7 +33,7 @@ function OtherDomains({ current }: { current: string }) {
 
 /* ── Nos domaines (page liste) ───────────────────────────────────────────── */
 
-export function DomainsListView() {
+export function DomainsListView({ projects }: { projects: ProjectData[] }) {
   return (
     <>
       <section className="bg-ns text-white compass-watermark on-dark overflow-hidden">
@@ -48,7 +49,7 @@ export function DomainsListView() {
 
       <div className={`${wrap} py-12 sm:py-20 space-y-8 sm:space-y-12`}>
         {DOMAINS.map((d, i) => {
-          const count = getProjectsByDomain(d.slug).length;
+          const count = projectsOfDomain(projects, d.slug).length;
           return (
             <Reveal key={d.slug}>
               <section
@@ -92,8 +93,18 @@ export function DomainsListView() {
 
 /* ── Page d'un domaine ───────────────────────────────────────────────────── */
 
-export function DomainView({ domain, media, team }: { domain: Domain; media: Media[]; team: Member[] }) {
-  const projects = getProjectsByDomain(domain.slug);
+export function DomainView({
+  domain,
+  projects: allProjects,
+  media,
+  team,
+}: {
+  domain: Domain;
+  projects: ProjectData[];
+  media: Media[];
+  team: Member[];
+}) {
+  const projects = projectsOfDomain(allProjects, domain.slug);
   const domainMedia = media.filter((m) => m.domainSlug === domain.slug).slice(0, 8);
 
   return (
@@ -189,10 +200,33 @@ function Block({ title, children }: { title: string; children: React.ReactNode }
   );
 }
 
-export function ProjectView({ project, media, news }: { project: ProjectData; media: Media[]; news: NewsArticle[] }) {
+/** Texte saisi dans l'admin : une ligne vide sépare deux paragraphes. */
+function Paragraphs({ text }: { text: string }) {
+  return (
+    <div className="space-y-4">
+      {text.split(/\n\s*\n/).map((p, i) => (
+        <p key={i} className="text-lg text-ink leading-relaxed">
+          {p}
+        </p>
+      ))}
+    </div>
+  );
+}
+
+export function ProjectView({
+  project,
+  projects,
+  media,
+  news,
+}: {
+  project: ProjectData;
+  projects: ProjectData[];
+  media: Media[];
+  news: NewsArticle[];
+}) {
   const domain = getDomainBySlug(project.domainSlug)!;
   const projectMedia = media.filter((m) => m.projectSlug === project.slug);
-  const similar = getProjectsByDomain(domain.slug).filter((p) => p.slug !== project.slug);
+  const similar = projectsOfDomain(projects, domain.slug).filter((p) => p.slug !== project.slug);
   const related = news.filter((a) => `${a.title} ${a.excerpt}`.toLowerCase().includes(project.title.toLowerCase())).slice(0, 3);
   const question = `Bonjour Next Step.sn ! J'ai une question sur le projet « ${project.title} ».`;
 
@@ -227,8 +261,8 @@ export function ProjectView({ project, media, news }: { project: ProjectData; me
         <aside className="lg:order-2 lg:sticky lg:top-24 bg-dc-light rounded-3xl p-6 border-t-8 border-dc">
           <h2 className="font-display font-bold text-xl text-dc-deep mb-4">Fiche rapide</h2>
           <dl className="space-y-3">
-            {project.facts.map((f) => (
-              <div key={f.label}>
+            {project.facts.map((f, i) => (
+              <div key={i}>
                 <dt className="text-xs font-bold uppercase tracking-wide text-dc-deep">{f.label}</dt>
                 <dd className="text-ink leading-snug">{f.value}</dd>
               </div>
@@ -248,21 +282,21 @@ export function ProjectView({ project, media, news }: { project: ProjectData; me
 
         <div className="lg:order-1 space-y-12 min-w-0">
           <Block title="Le projet">
-            <p className="text-lg text-ink leading-relaxed">{project.project}</p>
+            <Paragraphs text={project.project} />
           </Block>
 
           <Block title="La motivation">
-            <p className="text-lg text-ink leading-relaxed">{project.motivation}</p>
+            <Paragraphs text={project.motivation} />
           </Block>
 
           <Block title="Les objectifs">
-            <p className="text-lg text-ink leading-relaxed">{project.objectives}</p>
+            <Paragraphs text={project.objectives} />
           </Block>
 
           <Block title="Activités clés">
             <ul className="grid sm:grid-cols-2 gap-4 mt-5">
-              {project.activities.map((a) => (
-                <li key={a.title} className="bg-white rounded-2xl border border-pearl p-5 flex gap-4">
+              {project.activities.map((a, i) => (
+                <li key={i} className="bg-white rounded-2xl border border-pearl p-5 flex gap-4">
                   <span className="w-12 h-12 shrink-0 rounded-xl bg-dc-light text-dc-deep flex items-center justify-center">
                     <ActivityIcon name={a.icon} />
                   </span>
@@ -277,8 +311,8 @@ export function ProjectView({ project, media, news }: { project: ProjectData; me
 
           <Block title="Résultats attendus">
             <ul className="space-y-3 mt-5">
-              {project.results.map((r) => (
-                <li key={r} className="flex gap-3 text-lg text-ink">
+              {project.results.map((r, i) => (
+                <li key={i} className="flex gap-3 text-lg text-ink">
                   <span className="mt-1 w-6 h-6 shrink-0 rounded-full bg-dc text-white flex items-center justify-center">
                     <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3.5} aria-hidden>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />

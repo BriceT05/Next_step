@@ -1,19 +1,22 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getDomainBySlug } from "@/app/data/domains";
-import { PROJECTS, getProjectBySlug } from "@/app/data/projects";
-import { getMedia, getNews } from "@/lib/content";
+import { getMedia, getNews, getProjects } from "@/lib/content";
+import { findProject } from "@/lib/projects";
 import { ProjectView } from "../../../components/views-domains";
 
 export const revalidate = 300;
 
-export function generateStaticParams() {
-  return PROJECTS.map((p) => ({ slug: p.slug }));
+// Un projet créé dans l'admin a sa page tout de suite, sans nouveau déploiement.
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  return (await getProjects()).map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const project = findProject(await getProjects(), slug);
   if (!project) return { title: "Projet introuvable" };
   const domain = getDomainBySlug(project.domainSlug);
   const title = domain ? `${project.title} — ${domain.name}` : project.title;
@@ -26,8 +29,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const projects = await getProjects();
+  const project = findProject(projects, slug);
   if (!project) notFound();
   const [media, news] = await Promise.all([getMedia(), getNews()]);
-  return <ProjectView project={project} media={media} news={news} />;
+  return <ProjectView project={project} projects={projects} media={media} news={news} />;
 }

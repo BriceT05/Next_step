@@ -3,10 +3,11 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion, useScroll, useSpring } from "framer-motion";
 import { DOMAINS, domainTheme, getDomainBySlug } from "@/app/data/domains";
-import { getProjectBySlug } from "@/app/data/projects";
+import { findProject } from "@/lib/projects";
+import type { HistoryStep } from "@/lib/settings";
+import { useProjects } from "./SiteDataContext";
 import {
   DEFAULT_REGION_PROJECTS,
-  HISTORY_STEPS,
   type Member,
   REGION_PROJECTS,
   REGIONS,
@@ -27,7 +28,7 @@ function Footprint({ flip }: { flip: boolean }) {
   );
 }
 
-export function StepsPath() {
+export function StepsPath({ steps }: { steps: HistoryStep[] }) {
   const ref = useRef<HTMLOListElement>(null);
   const reduce = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start 70%", "end 60%"] });
@@ -42,11 +43,11 @@ export function StepsPath() {
         className="absolute left-6 md:left-1/2 top-0 bottom-0 w-1 -translate-x-1/2 rounded-full bg-gold"
         aria-hidden
       />
-      {HISTORY_STEPS.map((step, i) => {
+      {steps.map((step, i) => {
         const right = i % 2 === 1;
         return (
           <motion.li
-            key={step.title}
+            key={i}
             initial={reduce ? false : { opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
@@ -270,7 +271,10 @@ export function DomainTeams({ team, slug }: { team: Member[]; slug?: string }) {
 export function RegionMap() {
   const [active, setActive] = useState("Dakar");
   const region = REGIONS.find((r) => r.name === active)!;
-  const projects = (REGION_PROJECTS[active] ?? DEFAULT_REGION_PROJECTS).map((s) => getProjectBySlug(s)!).filter(Boolean);
+  const allProjects = useProjects();
+  const projects = (REGION_PROJECTS[active] ?? DEFAULT_REGION_PROJECTS)
+    .map((s) => findProject(allProjects, s))
+    .filter((p) => p !== undefined);
 
   return (
     <div className="grid lg:grid-cols-[1.3fr_1fr] gap-8 items-start">

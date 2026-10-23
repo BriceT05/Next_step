@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getSettings } from "@/lib/content";
 import { JoinView } from "../../components/views-about";
 
 export const metadata: Metadata = {
@@ -12,5 +13,5 @@ export default async function JoinPage({
   searchParams: Promise<{ profil?: string; projet?: string }>;
 }) {
   const { profil, projet } = await searchParams;
-  return <JoinView profil={profil} projet={projet} />;
+  return <JoinView profil={profil} projet={projet} settings={await getSettings()} />;
 }

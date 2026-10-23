@@ -12,11 +12,6 @@ export const SITE = {
   ],
 };
 
-export function whatsappLink(text?: string, index = 0): string {
-  const base = `https://wa.me/${SITE.phones[index].wa}`;
-  return text ? `${base}?text=${encodeURIComponent(text)}` : base;
-}
-
 export const SOCIALS = [
   { name: "Facebook", href: "https://www.facebook.com/nextstepsn" },
   { name: "Instagram", href: "https://www.instagram.com/next_step_sn" },

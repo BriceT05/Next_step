@@ -4,7 +4,8 @@ import Link from "next/link";
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import { addSubmission } from "@/app/admin/actions";
 import { domainTheme, getDomainBySlug } from "@/app/data/domains";
-import { DREAMS, NEXT_EVENT, PERSONAS, STATS } from "@/app/data/site";
+import { DREAMS, PERSONAS } from "@/app/data/site";
+import { useSettings } from "./SiteDataContext";
 import { ArrowIcon, DomainIcon } from "./icons";
 
 /** Apparition douce au défilement. */
@@ -167,10 +168,11 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
 }
 
 export function StatsCounters() {
+  const stats = useSettings().stats;
   return (
     <dl className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-x-4 gap-y-8">
-      {STATS.map((s) => (
-        <div key={s.label} className="text-center flex flex-col-reverse">
+      {stats.map((s, i) => (
+        <div key={i} className="text-center flex flex-col-reverse">
           <dt className="text-white/90 text-sm mt-1 leading-snug">{s.label}</dt>
           <dd className="font-display font-extrabold text-4xl sm:text-5xl text-gold">
             <Counter value={s.value} suffix={s.suffix} />
@@ -183,8 +185,8 @@ export function StatsCounters() {
 
 /* ── Compte à rebours du prochain événement ──────────────────────────────── */
 
-export function Countdown() {
-  const target = new Date(NEXT_EVENT.date).getTime();
+export function Countdown({ date, title }: { date: string; title: string }) {
+  const target = new Date(date).getTime();
   const [left, setLeft] = useState<number | null>(null);
 
   useEffect(() => {
@@ -205,7 +207,7 @@ export function Countdown() {
         ];
 
   return (
-    <div className="flex gap-2 sm:gap-4" role="timer" aria-label={`Temps restant avant ${NEXT_EVENT.title}`}>
+    <div className="flex gap-2 sm:gap-4" role="timer" aria-label={`Temps restant avant ${title}`}>
       {(parts ?? [{ label: "jours" }, { label: "heures" }, { label: "minutes" }, { label: "secondes" }]).map((p) => (
         <div key={p.label} className="bg-white/15 backdrop-blur rounded-2xl px-3 sm:px-5 py-3 text-center min-w-[4.2rem] sm:min-w-[5.5rem]">
           <div className="font-display font-extrabold text-3xl sm:text-5xl tabular-nums leading-none">

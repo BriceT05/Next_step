@@ -1,9 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { DOMAINS, domainTheme, getDomainBySlug } from "@/app/data/domains";
-import { PROJECTS, getProjectsByDomain } from "@/app/data/projects";
-import { HISTORY, NEXT_EVENT, PARTNERS } from "@/app/data/site";
-import { getDbPartners, getMedia, getNews } from "@/lib/content";
+import { PARTNERS } from "@/app/data/site";
+import { eventIsUpcoming } from "@/lib/settings";
+import { getDbPartners, getMedia, getNews, getProjects, getSettings } from "@/lib/content";
+import { projectsOfDomain } from "@/lib/projects";
 import { ArrowIcon, DomainIcon } from "../components/icons";
 import { Compass, Countdown, DreamWall, Reveal, StatsCounters } from "../components/home-widgets";
 import { FinalCta, ProjectCard, SectionTitle, SmartImage } from "../components/ui";
@@ -22,16 +23,27 @@ const FALLBACK_PHOTOS = [
 ];
 
 export default async function Home() {
-  const [media, news, dbPartners] = await Promise.all([getMedia(), getNews(3), getDbPartners()]);
+  const [media, news, dbPartners, projects, settings] = await Promise.all([
+    getMedia(),
+    getNews(3),
+    getDbPartners(),
+    getProjects(),
+    getSettings(),
+  ]);
 
   const photos = media.filter((m) => m.type === "photo").slice(0, 6);
   const video = media.find((m) => m.type === "video");
   const mosaic = photos.length >= 3 ? photos.map((p) => ({ src: p.src, caption: p.caption })) : FALLBACK_PHOTOS;
-  const featured = PROJECTS.filter((p) => p.featured);
+  const featured = projects.filter((p) => p.featured);
   const partnerList = dbPartners.length > 0 ? dbPartners.map((p) => p.full_name || p.name) : PARTNERS.map((p) => p.name);
   // répété pour que le bandeau défilant remplisse toujours la largeur de l'écran
   const partnerNames = Array.from({ length: Math.ceil(12 / partnerList.length) }, () => partnerList).flat();
-  const eventDomain = getDomainBySlug(NEXT_EVENT.domainSlug)!;
+  const event = settings.event;
+  const HISTORY = settings.history;
+  // La page est régénérée toutes les 5 minutes : le bloc disparaît de lui-même une fois la date passée.
+  // eslint-disable-next-line react-hooks/purity
+  const showEvent = eventIsUpcoming(event, Date.now());
+  const eventDomain = getDomainBySlug(event.domainSlug) ?? DOMAINS[0];
 
   return (
     <>
@@ -108,7 +120,7 @@ export default async function Home() {
                     <ArrowIcon className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </span>
                   <span className="absolute top-6 right-6 text-xs font-bold bg-white/20 px-3 py-1 rounded-full">
-                    {getProjectsByDomain(d.slug).length} projet{getProjectsByDomain(d.slug).length > 1 ? "s" : ""}
+                    {projectsOfDomain(projects, d.slug).length} projet{projectsOfDomain(projects, d.slug).length > 1 ? "s" : ""}
                   </span>
                 </Link>
               </Reveal>
@@ -193,22 +205,26 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 8. Prochain événement, avec compte à rebours */}
+      {/* 8. Prochain événement, avec compte à rebours (modifiable dans l'admin, Infos & chiffres) */}
+      {showEvent && (
       <section style={domainTheme(eventDomain)} className="bg-gradient-to-br from-dc-deep to-dc text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-16 flex flex-col lg:flex-row items-center justify-between gap-8 text-center lg:text-left">
           <div>
             <p className="text-sm font-bold uppercase tracking-widest text-white/95">Prochain événement · {eventDomain.name}</p>
-            <h2 className="font-display font-extrabold text-3xl sm:text-4xl mt-1">{NEXT_EVENT.title}</h2>
+            <h2 className="font-display font-extrabold text-3xl sm:text-4xl mt-1">{event.title}</h2>
             <p className="text-white/95 mt-1">
-              {NEXT_EVENT.subtitle} · {NEXT_EVENT.dateLabel}
+              {[event.subtitle, event.dateLabel].filter(Boolean).join(" · ")}
             </p>
           </div>
-          <Countdown />
-          <Link href={NEXT_EVENT.href} className="shrink-0 bg-white text-dc-deep px-7 py-3.5 rounded-full font-bold hover:bg-cream transition">
-            Je m&apos;inscris
-          </Link>
+          <Countdown date={event.date} title={event.title} />
+          {event.href && (
+            <Link href={event.href} className="shrink-0 bg-white text-dc-deep px-7 py-3.5 rounded-full font-bold hover:bg-cream transition">
+              {event.buttonLabel}
+            </Link>
+          )}
         </div>
       </section>
+      )}
 
       {/* 9. Le mur « Ose rêver » */}
       <section className="py-16 sm:py-24 overflow-hidden">

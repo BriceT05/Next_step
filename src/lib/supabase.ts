@@ -14,6 +14,8 @@ export type NewsArticle = {
 }
 export type Partner = {
   id: string; name: string; full_name: string; logo_url: string; website?: string; created_at: string
+  /** institution | technique-financier | terrain (voir PARTNER_TYPES) */
+  type?: string
 }
 export type TeamMemberRow = {
   id: string; name: string; post: string; role: 'titulaire' | 'adjoint' | 'membre'; parent_id: string | null

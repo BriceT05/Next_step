@@ -1,8 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
 import type { GalleryItem, NewsArticle, Partner, TeamMemberRow } from "@/lib/supabase";
 import { DOMAINS } from "@/app/data/domains";
-import { PROJECTS } from "@/app/data/projects";
+import { PROJECTS, type ProjectData } from "@/app/data/projects";
 import { type Member, TEAM } from "@/app/data/site";
+import { fetchProjects } from "@/lib/projects";
+import { fetchSettings, type SiteSettings } from "@/lib/settings";
 
 /** Média affiché sur le site, relié si possible à un projet et à un domaine. */
 export interface Media {
@@ -33,9 +35,9 @@ const norm = (s: string) =>
  * Dans l'espace d'administration, le champ « tag » d'un média porte le nom du projet
  * (ou du domaine). C'est ce qui range le média dans la galerie du bon projet.
  */
-export function toMedia(item: GalleryItem): Media {
+export function toMedia(item: GalleryItem, projects: ProjectData[] = PROJECTS): Media {
   const tag = norm(item.tag ?? "");
-  const project = PROJECTS.find((p) => norm(p.title) === tag || p.slug === tag);
+  const project = projects.find((p) => norm(p.title) === tag || p.slug === tag);
   const domain = project
     ? DOMAINS.find((d) => d.slug === project.domainSlug)
     : DOMAINS.find((d) => norm(d.name) === tag || d.slug === tag);
@@ -54,12 +56,25 @@ export function toMedia(item: GalleryItem): Media {
   };
 }
 
+/** Les projets saisis dans l'admin ; tant qu'il n'y en a aucun, les six projets par défaut. */
+export async function getProjects(): Promise<ProjectData[]> {
+  return fetchProjects(db());
+}
+
+/** Coordonnées, réseaux sociaux et chiffres clés saisis dans l'admin (valeurs par défaut sinon). */
+export async function getSettings(): Promise<SiteSettings> {
+  return fetchSettings(db());
+}
+
 export async function getMedia(): Promise<Media[]> {
   const client = db();
   if (!client) return [];
   try {
-    const { data } = await client.from("gallery_items").select("*").order("created_at", { ascending: false });
-    return ((data ?? []) as GalleryItem[]).filter((i) => i.image_url || i.video_url).map(toMedia);
+    const [{ data }, projects] = await Promise.all([
+      client.from("gallery_items").select("*").order("created_at", { ascending: false }),
+      fetchProjects(client),
+    ]);
+    return ((data ?? []) as GalleryItem[]).filter((i) => i.image_url || i.video_url).map((i) => toMedia(i, projects));
   } catch {
     return [];
   }

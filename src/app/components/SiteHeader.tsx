@@ -4,12 +4,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { DOMAINS, domainTheme } from "@/app/data/domains";
-import { getProjectsByDomain } from "@/app/data/projects";
-import { NAV, SOCIALS } from "@/app/data/site";
+import { projectsOfDomain } from "@/lib/projects";
+import { NAV } from "@/app/data/site";
 import { DomainIcon, SocialIcon } from "./icons";
+import { useProjects, useSettings } from "./SiteDataContext";
 
 export default function SiteHeader() {
   const pathname = usePathname();
+  const projects = useProjects();
+  const SOCIALS = useSettings().socials;
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [openDesktop, setOpenDesktop] = useState<string | null>(null);
@@ -123,7 +126,7 @@ export default function SiteHeader() {
                                 <div className="text-xs text-white/90">{d.theme}</div>
                               </Link>
                               <ul className="p-3 space-y-1">
-                                {getProjectsByDomain(d.slug).map((p) => (
+                                {projectsOfDomain(projects, d.slug).map((p) => (
                                   <li key={p.slug}>
                                     <Link
                                       href={`/projets/${p.slug}`}
@@ -237,7 +240,7 @@ export default function SiteHeader() {
                             </span>
                           </Link>
                           <ul className="px-2 py-1">
-                            {getProjectsByDomain(d.slug).map((p) => (
+                            {projectsOfDomain(projects, d.slug).map((p) => (
                               <li key={p.slug}>
                                 <Link href={`/projets/${p.slug}`} className="block px-3 py-2 text-sm text-white/90 hover:text-gold">
                                   {p.title}

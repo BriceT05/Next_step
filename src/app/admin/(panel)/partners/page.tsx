@@ -3,12 +3,15 @@ import { useEffect, useRef, useState, useTransition } from 'react'
 import Image from 'next/image'
 import { supabase } from '@/lib/supabase'
 import type { Partner } from '@/lib/supabase'
-import { addPartner, deletePartner, updatePartner } from '@/app/admin/actions'
+import { PARTNER_TYPES, PARTNERS, type PartnerType } from '@/app/data/site'
+import { addPartner, deletePartner, seedPartners, updatePartner } from '@/app/admin/actions'
 import {
   Card, DeleteButton, EditButton, EditingNotice, Empty, Field, FileUpload, Loading, PageHeader, btnGhost, btnPrimary, inputCls,
 } from '@/app/admin/ui'
 
-const EMPTY = { name: '', full_name: '', website: '', logo_url: '' }
+const TYPES = Object.keys(PARTNER_TYPES) as PartnerType[]
+const EMPTY = { name: '', full_name: '', website: '', logo_url: '', type: 'institution' as PartnerType }
+const typeOf = (p: Partner): PartnerType => (p.type && p.type in PARTNER_TYPES ? (p.type as PartnerType) : 'terrain')
 
 export default function PartnersAdmin() {
   const [partners, setPartners] = useState<Partner[] | null>(null)
@@ -16,6 +19,7 @@ export default function PartnersAdmin() {
   const [form, setForm] = useState(EMPTY)
   const [resetKey, setResetKey] = useState(0)
   const [editing, setEditing] = useState<Partner | null>(null)
+  const [error, setError] = useState('')
   const formRef = useRef<HTMLDivElement>(null)
 
   const fetchPartners = () =>
@@ -26,7 +30,7 @@ export default function PartnersAdmin() {
 
   const startEdit = (p: Partner) => {
     setEditing(p)
-    setForm({ name: p.name, full_name: p.full_name ?? '', website: p.website ?? '', logo_url: p.logo_url ?? '' })
+    setForm({ name: p.name, full_name: p.full_name ?? '', website: p.website ?? '', logo_url: p.logo_url ?? '', type: typeOf(p) })
     setResetKey(k => k + 1)
     formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
@@ -42,11 +46,14 @@ export default function PartnersAdmin() {
     if (!form.name.trim()) return
     const raw = form.website.trim()
     const website = raw ? (/^https?:\/\//.test(raw) ? raw : `https://${raw}`) : ''
-    const data = { name: form.name.trim(), full_name: form.full_name.trim(), logo_url: form.logo_url }
+    const data = { name: form.name.trim(), full_name: form.full_name.trim(), logo_url: form.logo_url, type: form.type }
+    setError('')
     startTransition(async () => {
       // en modification, une chaîne vide efface le site web
-      if (editing) await updatePartner(editing.id, { ...data, website })
-      else await addPartner({ ...data, website: website || undefined })
+      const res = editing
+        ? await updatePartner(editing.id, { ...data, website })
+        : await addPartner({ ...data, website: website || undefined })
+      if (res.error) { setError(res.error); return }
       cancelEdit()
       await fetchPartners()
     })
@@ -60,10 +67,35 @@ export default function PartnersAdmin() {
     })
   }
 
+  const missingDefaults = PARTNERS.filter(d => !(partners ?? []).some(p => p.name === d.name))
+
+  const handleSeed = () => {
+    setError('')
+    startTransition(async () => {
+      const res = await seedPartners()
+      if (res.error) setError(res.error)
+      await fetchPartners()
+    })
+  }
+
   return (
     <div>
       <PageHeader title="Partenaires"
-        intro="Dès qu'un partenaire est ajouté ici, cette liste remplace celle par défaut sur l'accueil et la page Nos partenaires." />
+        intro="Les partenaires s'affichent sur l'accueil (bandeau défilant) et sur la page Nos partenaires, rangés par type." />
+
+      {error && <p role="alert" className="mb-6 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm px-4 py-3">{error}</p>}
+
+      {missingDefaults.length > 0 && (partners?.length ?? 0) > 0 && (
+        <div className="mb-6 rounded-xl bg-gold/10 border border-gold/30 text-ink text-sm px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+          <span>
+            Le site n&apos;affiche que les partenaires enregistrés ici. {missingDefaults.length} partenaire{missingDefaults.length > 1 ? 's' : ''} de
+            la liste de départ n&apos;y {missingDefaults.length > 1 ? 'sont' : 'est'} pas : {missingDefaults.map(p => p.name).join(', ')}.
+          </span>
+          <button type="button" disabled={isPending} onClick={handleSeed} className={btnGhost}>
+            {isPending ? 'Ajout…' : missingDefaults.length > 1 ? 'Les ajouter' : 'L\'ajouter'}
+          </button>
+        </div>
+      )}
 
       <div ref={formRef} className="scroll-mt-24 mb-10">
       <Card title={editing ? 'Modifier un partenaire' : 'Ajouter un partenaire'} className={editing ? 'ring-2 ring-gold/40' : ''}>
@@ -76,6 +108,11 @@ export default function PartnersAdmin() {
           <Field label="Nom complet" hint="C'est ce nom qui s'affiche sur le site, s'il est renseigné.">
             <input value={form.full_name} onChange={e => setForm(f => ({ ...f, full_name: e.target.value }))}
               className={inputCls} placeholder="Ex. : Université Assane Seck de Ziguinchor" />
+          </Field>
+          <Field label="Type *" hint="La rubrique de la page Nos partenaires.">
+            <select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value as PartnerType }))} className={inputCls}>
+              {TYPES.map(t => <option key={t} value={t}>{PARTNER_TYPES[t]}</option>)}
+            </select>
           </Field>
           <Field label="Site web">
             <input value={form.website} onChange={e => setForm(f => ({ ...f, website: e.target.value }))}
@@ -95,15 +132,28 @@ export default function PartnersAdmin() {
       </Card>
       </div>
 
-      <h2 className="font-display font-semibold text-ink text-lg mb-4">
-        Partenaires en ligne {partners && <span className="text-muted font-normal">({partners.length})</span>}
-      </h2>
-
       {partners === null ? <Loading /> : partners.length === 0 ? (
-        <Empty title="Aucun partenaire enregistré" text="Le site affiche pour l'instant la liste par défaut du cahier des charges." />
+        <div className="space-y-4">
+          <Empty title="Aucun partenaire enregistré"
+            text={`Le site affiche la liste par défaut (${PARTNERS.length} partenaires). Elle sera recopiée ici au premier ajout ; tu peux aussi la recopier tout de suite pour la modifier.`} />
+          <div className="text-center">
+            <button type="button" disabled={isPending} onClick={handleSeed} className={btnGhost}>
+              {isPending ? 'Copie…' : 'Recopier la liste par défaut'}
+            </button>
+          </div>
+        </div>
       ) : (
+        <div className="space-y-10">
+          {TYPES.map(t => {
+            const list = partners.filter(p => typeOf(p) === t)
+            if (list.length === 0) return null
+            return (
+        <section key={t}>
+        <h2 className="font-display font-semibold text-ink text-lg mb-4">
+          {PARTNER_TYPES[t]} <span className="text-muted font-normal">({list.length})</span>
+        </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {partners.map(p => (
+          {list.map(p => (
             <article key={p.id} className={`bg-white border rounded-2xl p-4 shadow-sm flex flex-col items-center text-center ${editing?.id === p.id ? 'border-gold ring-2 ring-gold/30' : 'border-pearl'}`}>
               <div className="relative w-full h-20 rounded-xl bg-cream flex items-center justify-center mb-3 overflow-hidden">
                 {p.logo_url
@@ -123,6 +173,10 @@ export default function PartnersAdmin() {
               </div>
             </article>
           ))}
+        </div>
+        </section>
+            )
+          })}
         </div>
       )}
     </div>

@@ -41,6 +41,10 @@ create table if not exists public.partners (
   created_at  timestamptz not null default now()
 );
 
+-- Type de partenaire (rubrique de la page Nos partenaires) : ajouté en octobre 2026.
+alter table public.partners add column if not exists type text not null default 'terrain'
+  check (type in ('institution', 'technique-financier', 'terrain'));
+
 -- ── Équipe (bureau et domaines) ─────────────────────────────
 -- Un adjoint se rattache à son titulaire par parent_id. Sans domaine, le membre fait partie du bureau.
 create table if not exists public.team_members (
@@ -55,6 +59,27 @@ create table if not exists public.team_members (
   quote       text not null default '',
   sort_order  integer not null default 0,
   created_at  timestamptz not null default now()
+);
+
+-- ── Projets ─────────────────────────────────────────────────
+-- Tout le contenu d'un projet (titre, textes, fiche, activités, calendrier…) est rangé dans `data`
+-- (voir ProjectData dans src/app/data/projects.ts). Table vide = le site affiche les six projets par défaut.
+create table if not exists public.projects (
+  id          uuid primary key default gen_random_uuid(),
+  slug        text not null unique check (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
+  sort_order  integer not null default 0,
+  data        jsonb not null default '{}'::jsonb,
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now()
+);
+
+-- ── Réglages généraux ───────────────────────────────────────
+-- Une ligne par clé : « general » (slogan, ville, e-mail, téléphones, réseaux sociaux) et « stats » (chiffres clés).
+-- Clé absente = le site garde les valeurs par défaut (voir src/lib/settings.ts).
+create table if not exists public.site_settings (
+  key         text primary key,
+  value       jsonb not null,
+  updated_at  timestamptz not null default now()
 );
 
 -- ── Demandes envoyées par les formulaires du site ───────────
@@ -78,6 +103,8 @@ alter table public.news_articles enable row level security;
 alter table public.partners      enable row level security;
 alter table public.submissions   enable row level security;
 alter table public.team_members  enable row level security;
+alter table public.projects      enable row level security;
+alter table public.site_settings enable row level security;
 
 drop policy if exists "lecture publique" on public.gallery_items;
 create policy "lecture publique" on public.gallery_items for select to anon, authenticated using (true);
@@ -90,6 +117,12 @@ create policy "lecture publique" on public.partners for select to anon, authenti
 
 drop policy if exists "lecture publique" on public.team_members;
 create policy "lecture publique" on public.team_members for select to anon, authenticated using (true);
+
+drop policy if exists "lecture publique" on public.projects;
+create policy "lecture publique" on public.projects for select to anon, authenticated using (true);
+
+drop policy if exists "lecture publique" on public.site_settings;
+create policy "lecture publique" on public.site_settings for select to anon, authenticated using (true);
 
 -- Les visiteurs peuvent envoyer une demande, avec des tailles raisonnables, mais pas les lire.
 drop policy if exists "envoi depuis le site" on public.submissions;

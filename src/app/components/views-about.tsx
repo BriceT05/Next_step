@@ -2,7 +2,8 @@ import Link from "next/link";
 import type { Partner } from "@/lib/supabase";
 import type { Media } from "@/lib/content";
 import { DOMAINS, domainTheme } from "@/app/data/domains";
-import { HISTORY, type Member, MISSION, PARTNER_TYPES, PARTNERS, type PartnerType, SITE, SOCIALS, VALUES, VISION, whatsappLink } from "@/app/data/site";
+import { type Member, PARTNER_TYPES, PARTNERS, type PartnerType } from "@/app/data/site";
+import { type SiteSettings, whatsappHref } from "@/lib/settings";
 import { BureauTree, DomainTeams, RegionMap, StepsPath } from "./about-widgets";
 import { JoinForms, SiteForm } from "./Forms";
 import { ArrowIcon, DomainIcon, SocialIcon, WhatsAppIcon } from "./icons";
@@ -14,7 +15,8 @@ const about = { label: "Qui sommes-nous", href: "/qui-sommes-nous/notre-histoire
 
 /* ── Notre histoire ──────────────────────────────────────────────────────── */
 
-export function HistoryView() {
+export function HistoryView({ settings }: { settings: SiteSettings }) {
+  const HISTORY = settings.history;
   return (
     <>
       <PageHero kicker="Notre histoire" title={HISTORY.title} crumbs={[about, { label: "Notre histoire" }]} />
@@ -39,7 +41,7 @@ export function HistoryView() {
       <section className="bg-white">
         <div className={`${wrap} py-14 sm:py-20`}>
           <SectionTitle kicker="Pas à pas" title="Notre chemin" text="Chaque étape est un pas. Fais défiler pour avancer avec nous." />
-          <StepsPath />
+          <StepsPath steps={HISTORY.steps} />
         </div>
       </section>
       <FinalCta />
@@ -49,7 +51,8 @@ export function HistoryView() {
 
 /* ── Mission et valeurs ──────────────────────────────────────────────────── */
 
-export function MissionView() {
+export function MissionView({ settings }: { settings: SiteSettings }) {
+  const { mission: MISSION, vision: VISION, values: VALUES } = settings.about;
   return (
     <>
       <PageHero
@@ -76,7 +79,7 @@ export function MissionView() {
           <SectionTitle kicker="Nos valeurs" title="Ce en quoi nous croyons" />
           <ul className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {VALUES.map((v, i) => (
-              <li key={v.name} className="bg-cream rounded-3xl border border-pearl p-6 text-center">
+              <li key={i} className="bg-cream rounded-3xl border border-pearl p-6 text-center">
                 <span className="mx-auto w-12 h-12 rounded-full bg-gold text-ink font-display font-extrabold text-xl flex items-center justify-center mb-3">
                   {i + 1}
                 </span>
@@ -159,6 +162,17 @@ export function TeamView({ team }: { team: Member[] }) {
 
 export function PartnersView({ dbPartners }: { dbPartners: Partner[] }) {
   const types = Object.keys(PARTNER_TYPES) as PartnerType[];
+  // Dès qu'un partenaire est saisi dans l'admin, la base remplace la liste par défaut.
+  const partners =
+    dbPartners.length > 0
+      ? dbPartners.map((p) => ({
+          key: p.id,
+          name: p.full_name || p.name,
+          type: (p.type && p.type in PARTNER_TYPES ? p.type : "terrain") as PartnerType,
+          logo: p.logo_url || undefined,
+          website: p.website || undefined,
+        }))
+      : PARTNERS.map((p) => ({ ...p, key: p.name }));
   return (
     <>
       <PageHero
@@ -169,14 +183,14 @@ export function PartnersView({ dbPartners }: { dbPartners: Partner[] }) {
       />
       <div className={`${wrap} py-14 sm:py-20 space-y-12`}>
         {types.map((t) => {
-          const list = PARTNERS.filter((p) => p.type === t);
+          const list = partners.filter((p) => p.type === t);
           if (list.length === 0) return null;
           return (
             <section key={t}>
               <h2 className="font-display font-bold text-2xl text-ns mb-5">{PARTNER_TYPES[t]}</h2>
               <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {list.map((p) => (
-                  <li key={p.name} className="bg-white rounded-3xl border border-pearl p-6 flex items-center gap-4">
+                  <li key={p.key} className="bg-white rounded-3xl border border-pearl p-6 flex items-center gap-4">
                     <span className="relative w-14 h-14 shrink-0 rounded-2xl bg-cream border border-pearl overflow-hidden flex items-center justify-center font-display font-bold text-ns text-xl">
                       {p.logo ? <SmartImage src={p.logo} alt="" sizes="56px" className="!object-contain p-1" /> : p.name.charAt(0)}
                     </span>
@@ -194,29 +208,6 @@ export function PartnersView({ dbPartners }: { dbPartners: Partner[] }) {
             </section>
           );
         })}
-
-        {dbPartners.length > 0 && (
-          <section>
-            <h2 className="font-display font-bold text-2xl text-ns mb-5">Ils nous accompagnent aussi</h2>
-            <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {dbPartners.map((p) => (
-                <li key={p.id} className="bg-white rounded-3xl border border-pearl p-6 flex items-center gap-4">
-                  <span className="relative w-14 h-14 shrink-0 rounded-2xl bg-cream border border-pearl overflow-hidden flex items-center justify-center font-display font-bold text-ns text-xl">
-                    {p.logo_url ? <SmartImage src={p.logo_url} alt="" sizes="56px" className="!object-contain p-1" /> : p.name.charAt(0)}
-                  </span>
-                  <span>
-                    <span className="block font-display font-bold text-ink leading-snug">{p.full_name || p.name}</span>
-                    {p.website && (
-                      <a href={p.website} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-ns underline underline-offset-4">
-                        Visiter le site
-                      </a>
-                    )}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
 
         <div className="bg-ns text-white rounded-3xl p-8 sm:p-10 text-center">
           <h2 className="font-display font-bold text-2xl sm:text-3xl">Vous souhaitez soutenir la jeunesse sénégalaise ?</h2>
@@ -254,7 +245,8 @@ export function GalleryView({ media }: { media: Media[] }) {
 
 /* ── Nous rejoindre ──────────────────────────────────────────────────────── */
 
-export function JoinView({ profil, projet }: { profil?: string; projet?: string }) {
+export function JoinView({ profil, projet, settings: SITE }: { profil?: string; projet?: string; settings: SiteSettings }) {
+  const whatsappLink = (text: string) => whatsappHref(SITE, text);
   return (
     <>
       <PageHero
@@ -291,7 +283,9 @@ export function JoinView({ profil, projet }: { profil?: string; projet?: string 
 
 /* ── Contact ─────────────────────────────────────────────────────────────── */
 
-export function ContactView() {
+export function ContactView({ settings: SITE }: { settings: SiteSettings }) {
+  const SOCIALS = SITE.socials;
+  const whatsappLink = (text: string) => whatsappHref(SITE, text);
   return (
     <>
       <PageHero kicker="On t'écoute" title="Contact" text="Écris-nous, appelle-nous ou passe par WhatsApp." crumbs={[{ label: "Contact" }]} />

@@ -1,8 +1,8 @@
 import type { MetadataRoute } from "next";
 import { DOMAINS } from "@/app/data/domains";
-import { PROJECTS } from "@/app/data/projects";
+import { getProjects } from "@/lib/content";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = "https://nextstep.sn";
 
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -27,7 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  const projectRoutes: MetadataRoute.Sitemap = PROJECTS.map((p) => ({
+  const projectRoutes: MetadataRoute.Sitemap = (await getProjects()).map((p) => ({
     url: `${base}/projets/${p.slug}`,
     lastModified: new Date(),
     changeFrequency: "monthly",

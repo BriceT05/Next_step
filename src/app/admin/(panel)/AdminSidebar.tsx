@@ -6,6 +6,8 @@ import { usePathname } from 'next/navigation'
 import { logout } from '@/app/admin/actions'
 
 const ICONS: Record<string, React.ReactNode> = {
+  about: <path d="M12 6c-2-1.5-4.5-2-8-2v14c3.5 0 6 .5 8 2m0-14c2-1.5 4.5-2 8-2v14c-3.5 0-6 .5-8 2m0-14v14" />,
+  settings: <path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0M14 4v4M8 10v4M16 16v4" />,
   dashboard: <path d="M4 13h6V4H4v9zm0 7h6v-5H4v5zm10 0h6v-9h-6v9zm0-16v5h6V4h-6z" />,
   gallery: <path d="M4 16l4.6-4.6a2 2 0 012.8 0L16 16m-2-2l1.6-1.6a2 2 0 012.8 0L20 14M14 8h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />,
   news: <path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2M7 8h6M7 12h6M7 16h4" />,
@@ -21,8 +23,10 @@ const NAV = [
   { href: '/admin/gallery', label: 'Photos & vidéos', icon: 'gallery' },
   { href: '/admin/news', label: 'Actualités', icon: 'news' },
   { href: '/admin/projects', label: 'Projets', icon: 'projects' },
+  { href: '/admin/about', label: 'Qui sommes-nous', icon: 'about' },
   { href: '/admin/team', label: 'Équipe', icon: 'team' },
   { href: '/admin/partners', label: 'Partenaires', icon: 'partners' },
+  { href: '/admin/settings', label: 'Infos & chiffres', icon: 'settings' },
 ]
 
 function Icon({ name }: { name: string }) {

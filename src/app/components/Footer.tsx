@@ -3,8 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { DOMAINS } from "@/app/data/domains";
-import { SITE, SOCIALS, whatsappLink } from "@/app/data/site";
+import { whatsappHref } from "@/lib/settings";
 import { SocialIcon, WhatsAppIcon } from "./icons";
+import { useSettings } from "./SiteDataContext";
 
 const quickLinks = [
   { label: "Notre histoire", href: "/qui-sommes-nous/notre-histoire" },
@@ -18,6 +19,9 @@ const quickLinks = [
 ];
 
 export default function Footer() {
+  const SITE = useSettings();
+  const SOCIALS = SITE.socials;
+  const whatsappLink = (text: string) => whatsappHref(SITE, text);
   const [email, setEmail] = useState("");
   const [waHref, setWaHref] = useState<string | null>(null);
 

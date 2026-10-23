@@ -1,7 +1,8 @@
 'use client'
 import { useEffect, useRef, useState, useTransition } from 'react'
 import Image from 'next/image'
-import { PROJECTS } from '@/app/data/projects'
+import { PROJECTS, type ProjectData } from '@/app/data/projects'
+import { useAdminProjects } from '@/app/admin/useAdminProjects'
 import { supabase } from '@/lib/supabase'
 import type { NewsArticle } from '@/lib/supabase'
 import { addNewsArticle, deleteNewsArticle, updateNewsArticle } from '@/app/admin/actions'
@@ -33,7 +34,7 @@ function isoFromFr(date: string) {
 const EMPTY = { category: CATEGORIES[0].label, title: '', excerpt: '', day: today(), author: 'Équipe Next Step.sn', read_time: '3 min', image_url: '' }
 
 /** Même règle que la page projet du site : l'article y apparaît s'il cite le nom du projet. */
-const linkedProjects = (text: string) => PROJECTS.filter(p => text.toLowerCase().includes(p.title.toLowerCase()))
+const linkedProjects = (text: string, projects: ProjectData[]) => projects.filter(p => text.toLowerCase().includes(p.title.toLowerCase()))
 
 export default function NewsAdmin() {
   const [articles, setArticles] = useState<NewsArticle[] | null>(null)
@@ -49,7 +50,8 @@ export default function NewsAdmin() {
 
   useEffect(() => { fetchArticles() }, [])
 
-  const linked = linkedProjects(`${form.title} ${form.excerpt}`)
+  const projects = useAdminProjects().projects ?? PROJECTS
+  const linked = linkedProjects(`${form.title} ${form.excerpt}`, projects)
 
   const startEdit = (a: NewsArticle) => {
     setEditing(a)
@@ -114,7 +116,7 @@ export default function NewsAdmin() {
           <div className="sm:col-span-2 -mt-2 text-xs rounded-xl px-4 py-3 bg-cream border border-pearl text-muted">
             {linked.length > 0
               ? <>Cet article s&apos;affichera aussi sur la page du projet <strong className="text-ns">{linked.map(p => p.title).join(', ')}</strong>.</>
-              : <>Astuce : cite le nom d&apos;un projet (ex. « {PROJECTS[0].title} ») dans le titre ou le résumé pour que l&apos;article apparaisse sur sa page.</>}
+              : <>Astuce : cite le nom d&apos;un projet (ex. « {projects[0]?.title} ») dans le titre ou le résumé pour que l&apos;article apparaisse sur sa page.</>}
           </div>
           <Field label="Catégorie">
             <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} className={inputCls}>

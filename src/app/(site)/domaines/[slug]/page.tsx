@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DOMAINS, getDomainBySlug } from "@/app/data/domains";
-import { getMedia, getTeam } from "@/lib/content";
+import { getMedia, getProjects, getTeam } from "@/lib/content";
 import { DomainView } from "../../../components/views-domains";
 
 export const revalidate = 300;
@@ -26,6 +26,6 @@ export default async function DomainPage({ params }: { params: Promise<{ slug: s
   const { slug } = await params;
   const domain = getDomainBySlug(slug);
   if (!domain) notFound();
-  const [media, team] = await Promise.all([getMedia(), getTeam()]);
-  return <DomainView domain={domain} media={media} team={team} />;
+  const [media, team, projects] = await Promise.all([getMedia(), getTeam(), getProjects()]);
+  return <DomainView domain={domain} projects={projects} media={media} team={team} />;
 }

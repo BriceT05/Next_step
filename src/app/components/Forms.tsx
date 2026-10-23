@@ -2,9 +2,10 @@
 import { useState } from "react";
 import { addSubmission } from "@/app/admin/actions";
 import { DOMAINS } from "@/app/data/domains";
-import { PROJECTS } from "@/app/data/projects";
-import { REGIONS, whatsappLink } from "@/app/data/site";
+import { REGIONS } from "@/app/data/site";
+import { whatsappHref } from "@/lib/settings";
 import { WhatsAppIcon } from "./icons";
+import { useProjects, useSettings } from "./SiteDataContext";
 
 type FieldDef = {
   name: string;
@@ -55,7 +56,7 @@ const FORMS: Record<FormKind, { title: string; intro: string; submit: string; fi
     intro: "Choisis le projet qui t'intéresse. L'équipe te confirme l'ouverture des candidatures.",
     submit: "Envoyer ma candidature",
     fields: [
-      { name: "projet", label: "Projet", type: "select", required: true, options: PROJECTS.map((p) => p.title) },
+      { name: "projet", label: "Projet", type: "select", required: true, options: [] }, // rempli avec les projets en base (SiteForm)
       { name: "name", label: "Prénom et nom", required: true, half: true },
       { name: "age", label: "Âge", type: "number", half: true },
       { name: "phone", label: "Téléphone (WhatsApp)", type: "tel", required: true, half: true, placeholder: "+221 77 000 00 00" },
@@ -83,7 +84,12 @@ const inputCls =
 
 /** Formulaire générique : enregistre la demande dans l'espace d'administration, puis propose WhatsApp. */
 export function SiteForm({ kind, defaults = {} }: { kind: FormKind; defaults?: Record<string, string> }) {
-  const def = FORMS[kind];
+  const projects = useProjects();
+  const settings = useSettings();
+  const def = {
+    ...FORMS[kind],
+    fields: FORMS[kind].fields.map((f) => (f.name === "projet" ? { ...f, options: projects.map((p) => p.title) } : f)),
+  };
   const [values, setValues] = useState<Record<string, string>>(defaults);
   const [trap, setTrap] = useState("");
   const [state, setState] = useState<"idle" | "sending" | "sent">("idle");
@@ -118,7 +124,7 @@ export function SiteForm({ kind, defaults = {} }: { kind: FormKind; defaults?: R
     if (values.phone) lines.push(`Téléphone : ${values.phone}`);
     if (values.email) lines.push(`E-mail : ${values.email}`);
     if (message) lines.push(message);
-    setWaHref(whatsappLink(lines.join("\n")));
+    setWaHref(whatsappHref(settings, lines.join("\n")));
     setState("sent");
   };
 
@@ -225,7 +231,8 @@ const TABS: { kind: Exclude<FormKind, "contact">; label: string }[] = [
 export function JoinForms({ initial = "benevole", project }: { initial?: string; project?: string }) {
   const start = TABS.some((t) => t.kind === initial) ? (initial as FormKind) : "benevole";
   const [kind, setKind] = useState<FormKind>(start);
-  const projectTitle = PROJECTS.find((p) => p.slug === project)?.title;
+  const projects = useProjects();
+  const projectTitle = projects.find((p) => p.slug === project)?.title;
 
   return (
     <div>

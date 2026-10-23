@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Media } from "@/lib/content";
 import { DOMAINS } from "@/app/data/domains";
-import { PROJECTS } from "@/app/data/projects";
+import { useProjects } from "./SiteDataContext";
 import { SmartImage } from "./ui";
 import { WhatsAppIcon } from "./icons";
 
@@ -66,7 +66,8 @@ export default function MediaGallery({
   const touchX = useRef<number | null>(null);
 
   const years = useMemo(() => [...new Set(media.map((m) => m.year).filter(Boolean))].sort().reverse(), [media]);
-  const projectOptions = PROJECTS.filter((p) => !domain || p.domainSlug === domain);
+  const projects = useProjects();
+  const projectOptions = projects.filter((p) => !domain || p.domainSlug === domain);
 
   const scoped = media.filter(
     (m) => (!domain || m.domainSlug === domain) && (!project || m.projectSlug === project) && (!year || m.year === year),

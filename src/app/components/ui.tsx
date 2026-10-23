@@ -2,8 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { type Domain, domainTheme, getDomainBySlug } from "@/app/data/domains";
 import { type ProjectData, type ProjectStatus, STATUS_LABEL } from "@/app/data/projects";
-import { whatsappLink } from "@/app/data/site";
 import { ArrowIcon, DomainIcon, WhatsAppIcon } from "./icons";
+import { WhatsAppLink } from "./SiteDataContext";
 
 /** next/image pour les images locales ou Supabase, <img> simple pour les autres hébergeurs. */
 export function SmartImage({
@@ -181,15 +181,13 @@ export function Breadcrumb({ crumbs }: { crumbs: { label: string; href?: string 
 /** Bouton WhatsApp flottant, présent sur toutes les pages (touche 7). */
 export function WhatsAppFab() {
   return (
-    <a
-      href={whatsappLink("Bonjour Next Step.sn ! J'aimerais avoir des informations.")}
-      target="_blank"
-      rel="noopener noreferrer"
+    <WhatsAppLink
+      text="Bonjour Next Step.sn ! J'aimerais avoir des informations."
       aria-label="Écrire à l'équipe sur WhatsApp"
       className="fixed bottom-5 left-5 z-40 w-14 h-14 rounded-full bg-[#128C4B] text-white flex items-center justify-center shadow-xl shadow-black/20 hover:scale-105 transition-transform"
     >
       <WhatsAppIcon className="w-7 h-7" />
-    </a>
+    </WhatsAppLink>
   );
 }
 
@@ -203,15 +201,13 @@ export function WhatsAppButton({
   className?: string;
 }) {
   return (
-    <a
-      href={whatsappLink(text)}
-      target="_blank"
-      rel="noopener noreferrer"
+    <WhatsAppLink
+      text={text}
       className={`inline-flex items-center justify-center gap-2 bg-[#128C4B] text-white px-6 py-3.5 rounded-full font-bold hover:brightness-110 transition ${className}`}
     >
       <WhatsAppIcon />
       {children}
-    </a>
+    </WhatsAppLink>
   );
 }
 
